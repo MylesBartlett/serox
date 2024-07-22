@@ -26,7 +26,6 @@ from serox.misc import Clone, SizedIndexable
 from serox.option import Null, Option, Some
 
 __all__ = [
-    "Iter",
     "Vec",
 ]
 

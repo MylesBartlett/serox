@@ -10,7 +10,6 @@ from serox.option import Null, Option, Some
 
 __all__ = [
     "HashSet",
-    "Iter",
 ]
 
 
