@@ -187,8 +187,8 @@ class _Option[T](
     @overload
     def and_then[U](self: Null[T], f: Fn1[T, U], /) -> Null[U]: ...
     @overload
-    def and_then[U](self: Some[T], f: Fn1[T, U], /) -> U: ...
-    def and_then[U](self: Option[T], f: Fn1[T, U], /) -> U | Null[U]:
+    def and_then[U](self: Some[T], f: Fn1[T, U], /) -> Option[U]: ...
+    def and_then[U](self: Option[T], f: Callable[[T], Option[U]], /) -> Option[U]:
         match self:
             case Some(x):
                 return f(x)

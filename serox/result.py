@@ -182,8 +182,8 @@ class _Result[T, E](
     @overload
     def and_then[U](self: Err[T, E], f: Fn1[T, U], /) -> Err[U, E]: ...
     @overload
-    def and_then[U](self: Ok[T, E], f: Fn1[T, U], /) -> U: ...
-    def and_then[U](self: Result[T, E], op: Fn1[T, U], /) -> U | Err[U, E]:
+    def and_then[U](self: Ok[T, E], f: Fn1[T, U], /) -> Result[U, E]: ...
+    def and_then[U](self: Result[T, E], op: Callable[[T], Result[U, E]], /) -> Result[U, E]:
         match self:
             case Ok(t):
                 return op(t)
