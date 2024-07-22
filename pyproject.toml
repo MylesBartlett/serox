@@ -54,6 +54,7 @@ packages = ["serox"]
 
 [tool.codespell]
 count = false
+ignore-words-list = "crate"
 skip = ".git"
 
 [tool.pydoclint]

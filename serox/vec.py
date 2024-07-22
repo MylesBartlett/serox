@@ -78,6 +78,10 @@ class Vec[T](
     Extend[T],
     Into[list[T]],
 ):
+    """
+    Wrapper around a native Python :class:`list` to endow it with `Vec`-mimetic functionality.
+    """
+
     def __init__(self, *args: T) -> None:
         super().__init__()
         self.inner = list(args)
@@ -97,10 +101,24 @@ class Vec[T](
 
     @override
     def iter(self) -> DoubleEndedIterator[T, Literal[False]]:
+        """
+        Returns an iterator over the underlying list.
+
+        The iterator yields all items from start to end.
+
+        :returns: A double-ended iterator over the underlying list.
+        """
         return Iter(self, par=False)
 
     @override
     def par_iter(self) -> DoubleEndedIterator[T, Literal[True]]:
+        """
+        Returns a parallel iterator over the underlying list.
+
+        The iterator yields all items from start to end.
+
+        :returns: A parallel double-ended iterator over the underlying list.
+        """
         return Iter(self, par=True)
 
     def __iter__(self) -> Generator[T, None, None]:
@@ -127,7 +145,28 @@ class Vec[T](
         return len(self.inner)
 
     def len(self) -> int:
+        """
+        Returns the number of elements in the vector, also referred to as its 'length'.
+        """
         return self.__len__()
+
+    def is_empty(self) -> bool:
+        """
+        :returns: `True` if the vector contains no elements.
+        """
+        return self.len() == 0
+
+    def split_off(self, at: int, /) -> Vec[T]:
+        """
+        Splits the vector into two at the given index, retaining the head :math:`[0, at)` and
+        returning the tail :math:`[at. len)`.
+
+        :param at: The index to split the vector at.
+        :returns: A newly-allocated vector containing the elements :math:`[at, len)` of the tail.
+        """
+        tail = self.inner[at:]
+        self.inner = self.inner[:at]
+        return Vec(*tail)
 
     @classmethod
     def full(cls, value: T, n: int) -> Vec[T]:
@@ -146,9 +185,6 @@ class Vec[T](
     def append(self, other: Self, /):
         self.inner.extend(other.iter())
         other.clear()
-
-    def is_empty(self) -> bool:
-        return self.len() == 0
 
     def first(self) -> Option[T]:
         return Null() if self.is_empty() else Some(self[0])
@@ -176,11 +212,26 @@ class Vec[T](
         return Some(self.inner.pop())
 
     def remove(self, index: int) -> T:
+        """
+        Removes and returns the element at position `index` within the vector, shifting all
+        elements after it to the left.
+
+        :param index: The index of the element to remove.
+        :returns: The removed element previously at index `index` of the vector.
+        :raises: :class:`IndexError` if `index` is out of bounds.
+        """
         if index >= self.len():
             raise IndexError(f"removal index (is {index}) should be < len (is {self.len()})")
         return self.inner.pop(index)
 
     def insert(self, index: int, element: T) -> None:
+        """
+        Inserts an element at position `index` within the vector, shift all elements after it to
+        the right.
+
+        :param index: The index at which to insert the new `element`.
+        :param element: The new element to insert at index `index`.
+        """
         self.inner.insert(index, element)
 
     @override
@@ -196,14 +247,36 @@ class Vec[T](
         self.inner = list(filter(f, self.inner))
 
     def choose(self, rng: Rng) -> Option[T]:
+        """
+        Emulates `SliceRandom::choose` from the `rand` crate.
+
+        Randomly selects an element from the vector and returns it.
+        This returns :class:`~Null` if the vector is empty.
+
+        :param rng: The random number generator to use to choose the element.
+        :returns: `Some(x)`, where `x` is the randomly-chosen element if the vector is not empty,
+            otherwise `Null`.
+        """
         if self.is_empty():
             return Null()
         return Some(rng.choice(self.inner))
 
     def choose_multiple(self, rng: Rng, amount: int) -> Iter[T, Literal[False]]:
+        """
+        Emulates `SliceRandom::choose_multiple` from the `rand` crate.
+
+        Randomly selects `amount` elements - or all elements if `amount` exceeds the
+        vector's length - from the vector without replacement and returns an iterator over them.
+
+        :param rng: The random number generator to use to sample the elements without replacement.
+        :param amount: The number of elements to sample without replacement,
+            capped at the length of the vector.
+        :returns: An iterator over the chosen elements.
+        """
+        # cap the sample size at the population size
+        amount = min(amount, self.len())
         # TODO: Sample indices instead, passing them to a dedicated iterator to lazily sample
         # elements from `inner`.
-        # Note that random.sample samples **without** replacement.
         return Iter(rng.sample(self.inner, k=amount), par=False)
 
     @qmark
@@ -213,6 +286,23 @@ class Vec[T](
         amount: int,
         weight: Fn1[T, float],
     ) -> Result[Iter[T, Literal[False]], ValueError]:
+        """
+        Similar to :meth:`~Vec.choose_multiple`, but where the likelihood of each element’s
+        inclusion in the output may be specified. The elements are returned in an arbitrary,
+        unspecified order.
+
+        :param rng: The random number generator to use to sample the elements without replacement.
+
+        :param amount: The number of elements to sample without replacement,
+            capped at the length of the vector.
+
+        :param weight: Weighting function mapping each item :math:`x` to a relative likelihood
+            :math:`weight(x)`. The probability of each item being selected is thus
+            :math:`weight(x) / s`, where :math:`s` is the sum of all :math:`weight(x)`.
+
+        :returns: An iterator over the chosen elements.
+        """
+
         def call(x: T) -> float:
             match weight(x):
                 case p if (0 <= p) and math.isfinite(p):
@@ -221,6 +311,8 @@ class Vec[T](
                     raise ErrShortCircuit(ValueError("Invalid weight"))
 
         weights = self.iter().map(call).collect(Vec[float]).into()
+        # cap the sample size at the population size
+        amount = min(amount, self.len())
         return Ok(Iter(rng.choices(self.inner, weights=weights, k=amount), par=False))
 
     def shuffle(self, rng: Rng) -> None:
@@ -242,13 +334,17 @@ class Vec[T](
         return Vec(*(inner for outer in self for inner in outer))
 
     def dedup(self) -> None:
+        # iterator to start from the second (first) element
         next_iter = self.iter()
+        # offset the iterator by one. If there is no second element, return `Null`, otherwise
+        # proceed with the deduplication algorithm.
         match next_iter.advance_by(1):
             case Ok(_):
 
                 def not_repeated(pair: tuple[T, T], /) -> bool:
                     return pair[0] != pair[1]
 
+                # iterator starting from the first (zeroth) element
                 prev_iter = self.iter()
                 self.inner = (
                     prev_iter.zip_longest(next_iter)
