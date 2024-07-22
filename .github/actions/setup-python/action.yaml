@@ -1,6 +1,6 @@
 ---
 name: 'Python Setup'
-description: 'Sets up Python runtime with Rye and PyO3 bindings'
+description: 'Sets up a Python runtime with Rye'
 inputs:
   rye-version:
     description: 'Which version of Rye to use.'
