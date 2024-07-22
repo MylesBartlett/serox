@@ -66,7 +66,9 @@ class Range(
         return Null()
 
     @classmethod
-    def from_sized(cls, sized: Sized, /, start: int = 0, *, par: P2 = False) -> Range[P2]:
+    def from_sized(
+        cls, sized: Sized, /, start: int = 0, *, par: P2 = False
+    ) -> Range[P2]:
         return Range[P2](start, len(sized), par=par)
 
     def contains(self, item: Idx, /) -> bool:

@@ -93,7 +93,9 @@ class Iterator[Item, Par: bool](Protocol):
         if self.par:
             yield from cast(
                 Generator[Item, None, None],
-                Parallel(n_jobs=-1, verbose=0)(delayed(_identity)(i) for i in self._iter()),
+                Parallel(n_jobs=-1, verbose=0)(
+                    delayed(_identity)(i) for i in self._iter()
+                ),
             )
         else:
             yield from self._iter()

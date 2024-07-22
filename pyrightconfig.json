@@ -1,11 +1,12 @@
 {
     "$schema": "pyrightconfig.schema.json",
     "include": [
-        "serox/"
+        "serox/**"
     ],
     "exclude": [
         "**/.",
         "**/__pycache__",
+        "**/node_modules",
         ".venv",
         "**/.cache"
     ],

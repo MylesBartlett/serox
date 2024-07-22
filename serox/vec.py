@@ -15,7 +15,14 @@ from serox.convert import Into
 from serox.fmt import Debug
 from serox.question_mark import qmark
 from serox.result import ErrShortCircuit, Ok, Result, Err
-from .iter import DoubleEndedIterator, FromIterator, IntoIterator, IntoParIterator, Iterator, Extend
+from .iter import (
+    DoubleEndedIterator,
+    FromIterator,
+    IntoIterator,
+    IntoParIterator,
+    Iterator,
+    Extend,
+)
 from .cmp import PartialOrd
 from .default import Default
 
@@ -170,7 +177,9 @@ class Vec[T](
 
     def remove(self, index: int) -> T:
         if index >= self.len():
-            raise IndexError(f"removal index (is {index}) should be < len (is {self.len()})")
+            raise IndexError(
+                f"removal index (is {index}) should be < len (is {self.len()})"
+            )
         return self.inner.pop(index)
 
     def insert(self, index: int, element: T) -> None:

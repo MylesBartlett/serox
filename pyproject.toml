@@ -1,7 +1,7 @@
 [project]
 name = "serox"
 version = "0.1.0"
-description = "Primitives for Rustifying Python"
+description = "Serpentine Oxidation: Rusty primitives for Python"
 keywords = [
    "iterators",
    "option",
@@ -14,7 +14,7 @@ keywords = [
    "types",
    "typing",
 ]
-authors = [{ name = "Astute AI" }]
+authors = [{ name = "Myles Bartlett" }]
 classifiers = [
    "Programming Language :: Python :: 3.12",
    "Operating System :: OS Independent",
@@ -78,34 +78,6 @@ fmt = { chain = ["fmt:imports", "fmt:main"] }
 "fmt:imports" = "rye run ruff check --select I --fix"
 "fmt:main" = "rye fmt -a"
 
-# lint = { chain = ["lint:black", "lint:flake8" ] }
-# "lint:black" = "black --check src"
-# "lint:flake8" = "flake8 src"
-
-[tool.black]
-exclude = '''
-(
-  /(
-      \.eggs         # exclude a few common directories in the
-    | \.git          # root of the project
-    | \.undodir
-    | \.hg
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | buck-out
-    | build
-    | dist
-  )/
-)
-'''
-include = '\.pyi?$'
-line-length = 100
-skip-string-normalization = true
-target-version = ['py310']
-
-[tool.ruff]
 format.docstring-code-format = true
 line-length = 100
 lint.ignore = [
