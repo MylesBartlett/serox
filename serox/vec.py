@@ -177,9 +177,7 @@ class Vec[T](
 
     def remove(self, index: int) -> T:
         if index >= self.len():
-            raise IndexError(
-                f"removal index (is {index}) should be < len (is {self.len()})"
-            )
+            raise IndexError(f"removal index (is {index}) should be < len (is {self.len()})")
         return self.inner.pop(index)
 
     def insert(self, index: int, element: T) -> None:

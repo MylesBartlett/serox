@@ -78,6 +78,7 @@ fmt = { chain = ["fmt:imports", "fmt:main"] }
 "fmt:imports" = "rye run ruff check --select I --fix"
 "fmt:main" = "rye fmt -a"
 
+[tool.ruff]
 format.docstring-code-format = true
 line-length = 100
 lint.ignore = [
