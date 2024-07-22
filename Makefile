@@ -7,14 +7,13 @@ BASE ?= main
 fmt:  ## Run formatters
 	@. ./scripts/fmt.sh
 
-.PHONY: fmt
+.PHONY: lint
 lint:  ## Run linters
 	@. ./scripts/lint.sh
 
 .PHONY: pre-commit
-pre-commit:
-	# Run auto-formatting
-	fmt
+pre-commit: ## Run pre-commit hooks
+	@rye run pre-commit run
 
 .PHONY: workflow
 workflow:
