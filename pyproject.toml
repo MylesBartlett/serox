@@ -1,0 +1,162 @@
+[project]
+name = "serox"
+version = "0.1.0"
+description = "Primitives for Rustifying Python"
+keywords = [
+    "iterators",
+    "option",
+    "protocols",
+    "python",
+    "result",
+    "rust",
+    "structural-typing",
+    "traits",
+    "types",
+    "typing",
+]
+authors = [{ name = "Astute AI" }]
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
+]
+dependencies = [
+    "numpy>=1.26.3",
+    "joblib>=1.4.2",
+    "typing-extensions>=4.12.2",
+]
+readme = "README.md"
+requires-python = ">= 3.12"
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[tool.rye]
+dev-dependencies = [
+    "pytest>=8.3.1",
+    "pytest-cov>=5.0.0",
+    "codespell>=2.3.0",
+    "pydoclint>=0.5.6",
+    "pip>=24.1.2",
+    "pre-commit>=3.7.1",
+    "pyright>=1.1.372",
+    "ruff>=0.5.4",
+    "black[colorama]>=24.4.2",
+]
+managed = true
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["serox"]
+
+[tool.codespell]
+skip = ".git"
+ignore-words-list = ""
+count = false
+
+[tool.pydoclint]
+style = "sphinx"
+# Types in docstrings redundant due to annotations
+arg-type-hints-in-docstring = false
+check-return-types = false
+check-yield-types = false
+exclude = '.git|node_modules|.undodir/|target|.venv'
+
+[tool.rye.scripts]
+lint-doc = { cmd = "pydoclint ." }
+pydoclint = { cmd = "pydoclint ." }
+sort = { cmd = "rye run ruff check --select I --fix ." }
+test = { cmd = "pytest . " }
+test-cov = { cmd = "pytest . --cov ." }
+test-doc = { cmd = "pytest . --doctest-modules" }
+type-check = { cmd = "rye run pyright --verbose" }
+
+[tool.black]
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.undodir
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+)
+'''
+include = '\.pyi?$'
+line-length = 100
+skip-string-normalization = true
+target-version = ['py310']
+
+[tool.ruff]
+format.docstring-code-format = true
+line-length = 100
+lint.ignore = [
+    "E501",    # line length
+    "E721",    # `isinstance()` vs `type() == type()`
+    "E741",    # ambiguous variable name
+    "F541",    # f-string without placeholder
+    "PLW2901", # overwriting loop variable
+    "PLC0105", # covariant typevars have to end in "_co"
+]
+lint.per-file-ignores = { "__init__.py" = ["F403"] }
+lint.select = [
+    "E", # pycodestyle
+    "F", # pyflakes
+    "I", # isort
+    # "N", # naming
+    "PLC", # pylint convention
+    "PLE", # pylint error
+    # "PLR", # pylint refactor
+    "PLW", # pylint warning
+    "PTH", # use-pathlib
+    # "UP", # pyupgrade
+    "W",
+]
+target-version = "py310"
+
+[tool.ruff.lint.isort]
+case-sensitive = true
+classes = []
+extra-standard-library = ["typing_extensions"]
+force-sort-within-sections = true
+known-third-party = [
+    "black",
+    "hydra",
+    "matplotlib",
+    "mypy",
+    "numpy",
+    "omegaconf",
+    "pandas",
+    "pylint",
+    "pytest",
+    "pytorch_grad_cam",
+    "pytorch_lightning",
+    "scipy",
+    "setuptools",
+    "sklearn",
+    "torch",
+    "tqdm",
+    "wandb",
+]
+no-lines-before = ["future", "standard-library"]
+split-on-trailing-comma = false
+
+[tool.ruff.lint.pep8-naming]
+ignore-names = ["C"]
+
+[tool.coverage.report]
+ignore_errors = true
+fail_under = 70
+
+[tool.coverage.run]
+branch = true

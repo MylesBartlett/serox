@@ -1,0 +1,26 @@
+{
+    "$schema": "pyrightconfig.schema.json",
+    "include": [
+        "serox/"
+    ],
+    "exclude": [
+        "**/.",
+        "**/__pycache__",
+        ".venv",
+        "**/.cache"
+    ],
+    "venvPath": ".",
+    "venv": ".venv",
+    "typeCheckingMode": "strict",
+    "reportImplicitOverride": "error",
+    "reportMatchNotExhaustive": "error",
+    "reportUnusedCallResult": "error",
+    "reportUnnecessaryTypeIgnoreComment": "warning",
+    "reportMissingSuperCall": "warning",
+    "reportImportCycles": "error",
+    "reportShadowedImports": "warning",
+    "reportUninitializedInstanceVariable": "error",
+    "reportPropertyTypeMismatch": "error",
+    "reportImplicitStringConcatenation": "warning",
+    "reportCallInDefaultInitializer": "warning"
+}
