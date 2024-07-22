@@ -3,9 +3,28 @@
 SHELL=/bin/bash
 BASE ?= main
 
+.PHONY: fmt
+fmt:  ## Run formatters
+	@. ./scripts/fmt.sh
+
+.PHONY: fmt
+lint:  ## Run linters
+	@. ./scripts/lint.sh
+
+.PHONY: pre-commit
+pre-commit:
+	# Run auto-formatting
+	fmt
+
+.PHONY: workflow
+workflow:
+	@. ./scripts/run-workflows.sh
+
 .PHONY: clean
-clean: ## Delete all __pycache__ directories
-	@find . -type d -name __pycache__ -exec rm -r {} \+
+clean:  ## Clean up caches and build artifacts
+	@rm -rf .ruff_cache/
+	@rm -rf .venv/
+	@rm -rf .pytest_cache/
 
 .PHONY: help
 help:  ## Display this help screen

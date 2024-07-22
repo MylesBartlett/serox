@@ -3,27 +3,27 @@ name = "serox"
 version = "0.1.0"
 description = "Primitives for Rustifying Python"
 keywords = [
-    "iterators",
-    "option",
-    "protocols",
-    "python",
-    "result",
-    "rust",
-    "structural-typing",
-    "traits",
-    "types",
-    "typing",
+   "iterators",
+   "option",
+   "protocols",
+   "python",
+   "result",
+   "rust",
+   "structural-typing",
+   "traits",
+   "types",
+   "typing",
 ]
 authors = [{ name = "Astute AI" }]
 classifiers = [
-    "Programming Language :: Python :: 3.12",
-    "Operating System :: OS Independent",
-    "Typing :: Typed",
+   "Programming Language :: Python :: 3.12",
+   "Operating System :: OS Independent",
+   "Typing :: Typed",
 ]
 dependencies = [
-    "numpy>=1.26.3",
-    "joblib>=1.4.2",
-    "typing-extensions>=4.12.2",
+   "numpy>=1.26.3",
+   "joblib>=1.4.2",
+   "typing-extensions>=4.12.2",
 ]
 readme = "README.md"
 requires-python = ">= 3.12"
@@ -34,15 +34,15 @@ requires = ["hatchling"]
 
 [tool.rye]
 dev-dependencies = [
-    "pytest>=8.3.1",
-    "pytest-cov>=5.0.0",
-    "codespell>=2.3.0",
-    "pydoclint>=0.5.6",
-    "pip>=24.1.2",
-    "pre-commit>=3.7.1",
-    "pyright>=1.1.372",
-    "ruff>=0.5.4",
-    "black[colorama]>=24.4.2",
+   "pytest>=8.3.1",
+   "pytest-cov>=5.0.0",
+   "codespell>=2.3.0",
+   "pydoclint>=0.5.6",
+   "pip>=24.1.2",
+   "pre-commit>=3.7.1",
+   "pyright>=1.1.372",
+   "ruff>=0.5.4",
+   "black[colorama]>=24.4.2",
 ]
 managed = true
 
@@ -53,9 +53,8 @@ allow-direct-references = true
 packages = ["serox"]
 
 [tool.codespell]
-skip = ".git"
-ignore-words-list = ""
 count = false
+skip = ".git"
 
 [tool.pydoclint]
 style = "sphinx"
@@ -63,7 +62,7 @@ style = "sphinx"
 arg-type-hints-in-docstring = false
 check-return-types = false
 check-yield-types = false
-exclude = '.git|node_modules|.undodir/|target|.venv'
+exclude = '.git|.undodir/|.venv'
 
 [tool.rye.scripts]
 lint-doc = { cmd = "pydoclint ." }
@@ -73,6 +72,15 @@ test = { cmd = "pytest . " }
 test-cov = { cmd = "pytest . --cov ." }
 test-doc = { cmd = "pytest . --doctest-modules" }
 type-check = { cmd = "rye run pyright --verbose" }
+# Currently, the Ruff formatter does not sort imports. In order to both sort
+# imports and format, call the Ruff linter and then the formatter.
+fmt = { chain = ["fmt:imports", "fmt:main"] }
+"fmt:imports" = "rye run ruff check --select I --fix"
+"fmt:main" = "rye fmt -a"
+
+# lint = { chain = ["lint:black", "lint:flake8" ] }
+# "lint:black" = "black --check src"
+# "lint:flake8" = "flake8 src"
 
 [tool.black]
 exclude = '''
@@ -101,26 +109,26 @@ target-version = ['py310']
 format.docstring-code-format = true
 line-length = 100
 lint.ignore = [
-    "E501",    # line length
-    "E721",    # `isinstance()` vs `type() == type()`
-    "E741",    # ambiguous variable name
-    "F541",    # f-string without placeholder
-    "PLW2901", # overwriting loop variable
-    "PLC0105", # covariant typevars have to end in "_co"
+   "E501",    # line length
+   "E721",    # `isinstance()` vs `type() == type()`
+   "E741",    # ambiguous variable name
+   "F541",    # f-string without placeholder
+   "PLW2901", # overwriting loop variable
+   "PLC0105", # covariant typevars have to end in "_co"
 ]
 lint.per-file-ignores = { "__init__.py" = ["F403"] }
 lint.select = [
-    "E", # pycodestyle
-    "F", # pyflakes
-    "I", # isort
-    # "N", # naming
-    "PLC", # pylint convention
-    "PLE", # pylint error
-    # "PLR", # pylint refactor
-    "PLW", # pylint warning
-    "PTH", # use-pathlib
-    # "UP", # pyupgrade
-    "W",
+   "E", # pycodestyle
+   "F", # pyflakes
+   "I", # isort
+   # "N", # naming
+   "PLC", # pylint convention
+   "PLE", # pylint error
+   # "PLR", # pylint refactor
+   "PLW", # pylint warning
+   "PTH", # use-pathlib
+   # "UP", # pyupgrade
+   "W",
 ]
 target-version = "py310"
 
@@ -130,23 +138,23 @@ classes = []
 extra-standard-library = ["typing_extensions"]
 force-sort-within-sections = true
 known-third-party = [
-    "black",
-    "hydra",
-    "matplotlib",
-    "mypy",
-    "numpy",
-    "omegaconf",
-    "pandas",
-    "pylint",
-    "pytest",
-    "pytorch_grad_cam",
-    "pytorch_lightning",
-    "scipy",
-    "setuptools",
-    "sklearn",
-    "torch",
-    "tqdm",
-    "wandb",
+   "black",
+   "hydra",
+   "matplotlib",
+   "mypy",
+   "numpy",
+   "omegaconf",
+   "pandas",
+   "pylint",
+   "pytest",
+   "pytorch_grad_cam",
+   "pytorch_lightning",
+   "scipy",
+   "setuptools",
+   "sklearn",
+   "torch",
+   "tqdm",
+   "wandb",
 ]
 no-lines-before = ["future", "standard-library"]
 split-on-trailing-comma = false

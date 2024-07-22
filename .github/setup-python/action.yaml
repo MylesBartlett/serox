@@ -1,0 +1,21 @@
+---
+name: 'Python Setup'
+description: 'Sets up Python runtime with Rye and PyO3 bindings'
+inputs:
+  rye-version:
+    description: 'Which version of Rye to use.'
+    required: false
+    default: "latest"
+  cache-prefix:
+    description: 'Prefix to attach to the virtual-envrionment cache.'
+    required: false
+    default: "rye-venv"
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up rye
+      uses: eifinger/setup-rye@v1.15.0
+      with:
+        enable_cache: true
+        version: ${{ inputs.rye-version }}
+        cache-prefix: ${{ inputs.cache-prefix}}

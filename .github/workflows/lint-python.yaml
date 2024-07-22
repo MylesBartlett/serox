@@ -1,0 +1,105 @@
+---
+name: Lint Python
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**/serox/**'
+      - .github/workflows/lint-python.yaml
+      - pyproject.toml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**/serox/**'
+      - .github/workflows/lint-python.yaml
+      - pyproject.toml
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+env:
+  # Do not produce debug symbols to keep memory usage down
+  RUSTFLAGS: -C debuginfo=0
+
+jobs:
+  # Lint with ruff
+  ruff-lint:
+    name: Lint with ruff
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python runtime
+        uses: ./.github/actions/setup-python
+
+      - name: Lint with ruff
+        run: rye lint -a
+
+  # Check formatting with ruff
+  ruff-fmt:
+    name: Check formatting with ruff
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python runtime
+        uses: ./.github/actions/setup-python
+
+      - name: Lint with ruff
+        run: rye fmt --check -a
+
+  # Lint docstrings
+  pydoclint:
+    name: Lint docstrings with pydoclint
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python runtime
+        uses: ./.github/actions/setup-python
+
+      - name: Install pydoclint
+        run: |
+          rye sync --no-lock --with-sources
+
+      - name: Lint docstrings with pydoclint
+        run: rye run lint-doc
+
+  # Type checking with pyright
+  # Note that rust is required to build the Pyo3 bindings with maturin;
+  # this building is done automatically by `rye sync`.
+  pyright:
+    name: Type-checking with Pyright
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
+    needs: [ruff-lint, ruff-fmt, pydoclint]
+    strategy:
+      fail-fast: true
+      matrix:
+        rust-toolchain:
+          - stable
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python runtime
+        uses: ./.github/actions/setup-python
+
+      - name: Sync dependencies
+        run: rye sync --no-lock --all-features --with-sources
+
+      - name: Run pyright with rye
+        run: rye run pyright

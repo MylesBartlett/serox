@@ -1,0 +1,65 @@
+include = ["**/*.toml"]
+exclude = ["**/.undodir/**", "**/node_modules/**", "**/*_lock.toml"]
+
+[formatting]
+# Align entries vertically. Entries that have table headers, comments, or blank
+# lines between them are not aligned.
+align_entries = false
+# Align consecutive comments after entries and items vertically. This applies to
+# comments that are after entries or array items.
+align_comments = true
+# Put trailing commas for multiline arrays.
+array_trailing_comma = true
+# Expand arrays to multiple lines that exceed the maximum column width.
+array_auto_expand = true
+# Collapse arrays that don't exceed the maximum column width and don't contain comments.
+array_auto_collapse = false
+# Omit white space padding from single-line arrays
+compact_arrays = true
+# Omit white space padding from the start and end of inline tables.
+compact_inline_tables = false
+# Target maximum column width after which arrays are expanded into new lines.
+column_width = 100
+# Indent based on tables and arrays of tables and their subtables, subtables out of order are not indented.
+indent_tables = false
+# The substring that is used for indentation, should be tabs or spaces (but technically can be anything).
+indent_string = '   '
+# Add trailing newline at the end of the file if not present.
+trailing_newline = false
+# Alphabetically reorder keys that are not separated by empty lines.
+reorder_keys = false
+# Maximum amount of allowed consecutive blank lines. This does not affect the
+# whitespace at the end of the document, as it is always stripped.
+allowed_blank_lines = 1
+# Use CRLF for line endings.
+crlf = false
+
+[[rule]]
+formatting = { reorder_keys = true }
+include = ["**/Cargo.toml"]
+keys = [
+   "lib",
+   "features",
+   "build-dependencies",
+   "dependencies",
+   "dev-dependencies",
+   "workspace.dependencies",
+]
+
+[[rule]]
+formatting = { reorder_keys = true }
+include = ["**/pyproject.toml"]
+keys = [
+   "project.optional-dependencies",
+   "tool.rye",
+   "tool.rye.scripts",
+   "build-system",
+]
+
+[[rule]]
+keys = ["package"]
+formatting = { reorder_keys = false }
+
+[[rule]]
+keys = ["package"]
+formatting = { reorder_keys = false }
