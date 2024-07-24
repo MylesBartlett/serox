@@ -63,8 +63,8 @@ class _Result[T, E](
             case Err(_):
                 raise StopIteration
 
-    # Property emulative of Rust's ? operator when
-    # used in conjunction with [`as_result`].
+    # Property emulative of Rust's `?` operator when
+    # used in conjunction with [`serox::question_mark::qmark`].
     @property
     def q(self: Result[T, E]) -> T:
         match self:

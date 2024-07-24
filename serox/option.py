@@ -83,8 +83,8 @@ class _Option[T](
             case Null():
                 return f()
 
-    # Property emulative of Rust's ? operator when
-    # used in conjunction with [`as_option`].
+    # Property emulative of Rust's `?` operator when
+    # used in conjunction with [`serox::question_mark::qmark`].
     @property
     def q(self: Option[T]) -> T:
         match self:
