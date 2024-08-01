@@ -1,7 +1,9 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Any, Generator, Hashable, Iterable, Literal, Self, Sized, override
+from typing import Any, Generator, Hashable, Iterable, Self, Sized, override
+from typing import Iterator as NativeIterator
 
+from serox.common import False_, True_
 from serox.convert import Into
 from serox.default import Default
 from serox.iter import Extend, FromIterator, IntoIterator, IntoParIterator, Iterator
@@ -125,27 +127,32 @@ class HashSet[T: Hashable](
         return HashSet(*iter)
 
     @override
-    def iter(self) -> Iter[T, Literal[False]]:
-        return Iter(self, par=False)
+    def iter(self) -> Iter[T, False_]:
+        return Iter.new(self, par=False)
 
     def __iter__(self) -> Generator[T, None, None]:
         yield from self.iter()
 
     @override
-    def par_iter(self) -> Iter[T, Literal[True]]:
-        return Iter(self, par=True)
+    def par_iter(self) -> Iter[T, True_]:
+        return Iter.new(self, par=True)
 
     @override
     def clone(self) -> HashSet[T]:
         return HashSet(*self.inner.copy())
 
 
-@dataclass(repr=True, init=False)
-class Iter[Item, P: bool](Iterator[Item, P]):
-    def __init__(self, inner: HashSet[Item], /, par: P) -> None:
-        super().__init__()
-        self.iter = iter(inner.inner)
-        self.par = par
+@dataclass(repr=True, frozen=True, kw_only=True)
+class Iter[Item, Par: (True_, False_)](Iterator[Item, Par]):
+    iter: NativeIterator[Item]
+    par: Par
+
+    @classmethod
+    def new[Item2, Par2: (True_, False_)](
+        cls, data: HashSet[Item2], par: Par2 = True
+    ) -> Iter[Item2, Par2]:
+        iter_ = iter(data.inner)
+        return Iter(iter=iter_, par=par)
 
     @override
     def next(self) -> Option[Item]:

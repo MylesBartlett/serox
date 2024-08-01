@@ -1,12 +1,12 @@
 from __future__ import annotations  # noqa: I001
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from random import Random as Rng
+from .common import True_, False_
 from typing import (
     Any,
     Callable,
     Generator,
     Iterable,
-    Literal,
     Self,
     override,
 )
@@ -40,21 +40,29 @@ type Fn0[T] = Callable[[], T]
 type Fn1[T, U] = Callable[[T], U]
 
 
-@dataclass(repr=True)
-class Iter[Item, P: bool](DoubleEndedIterator[Item, P]):
+@dataclass(repr=True, frozen=True, kw_only=True)
+class Iter[Item, P: (True_, False_)](DoubleEndedIterator[Item, P]):
     data: SizedIndexable[Item]
     par: P
-    _ptr: int = 0
-    _end_or_len: int = field(init=False)
+    end_or_len: int
+    ptr: int
 
-    def __post_init__(self) -> None:
-        self._end_or_len = len(self.data)
+    @classmethod
+    def new[Item2, Par2: (True_, False_)](
+        cls, data: SizedIndexable[Item2], /, par: Par2 = False
+    ) -> Iter[Item2, Par2]:
+        return Iter(
+            data=data,
+            par=par,
+            ptr=0,
+            end_or_len=len(data),
+        )
 
     def _next(self, back: bool) -> Option[Item]:
-        if self._ptr < self._end_or_len:
-            ptr = -self._ptr if back else self._ptr
+        if self.ptr < self.end_or_len:
+            ptr = -self.ptr if back else self.ptr
             item = Some(self.data[ptr])
-            self._ptr += 1
+            object.__setattr__(self, "ptr", self.ptr + 1)
             return item
         return Null()
 
@@ -100,7 +108,7 @@ class Vec[T](
         return self.inner
 
     @override
-    def iter(self) -> DoubleEndedIterator[T, Literal[False]]:
+    def iter(self) -> DoubleEndedIterator[T, False_]:
         """
         Returns an iterator over the underlying list.
 
@@ -108,10 +116,10 @@ class Vec[T](
 
         :returns: A double-ended iterator over the underlying list.
         """
-        return Iter(self, par=False)
+        return Iter.new(self, par=False)
 
     @override
-    def par_iter(self) -> DoubleEndedIterator[T, Literal[True]]:
+    def par_iter(self) -> DoubleEndedIterator[T, True_]:
         """
         Returns a parallel iterator over the underlying list.
 
@@ -119,7 +127,7 @@ class Vec[T](
 
         :returns: A parallel double-ended iterator over the underlying list.
         """
-        return Iter(self, par=True)
+        return Iter.new(self, par=True)
 
     def __iter__(self) -> Generator[T, None, None]:
         yield from self.iter()
@@ -236,7 +244,7 @@ class Vec[T](
 
     @override
     @classmethod
-    def from_iter[P: bool](cls, s: Iterator[T, P], /) -> Vec[T]:
+    def from_iter[P: (True_, False_)](cls, s: Iterator[T, P], /) -> Vec[T]:
         return Vec(*s)
 
     @override
@@ -261,7 +269,7 @@ class Vec[T](
             return Null()
         return Some(rng.choice(self.inner))
 
-    def choose_multiple(self, rng: Rng, amount: int) -> Iter[T, Literal[False]]:
+    def choose_multiple(self, rng: Rng, amount: int) -> Iter[T, False_]:
         """
         Emulates `SliceRandom::choose_multiple` from the `rand` crate.
 
@@ -277,7 +285,7 @@ class Vec[T](
         amount = min(amount, self.len())
         # TODO: Sample indices instead, passing them to a dedicated iterator to lazily sample
         # elements from `inner`.
-        return Iter(rng.sample(self.inner, k=amount), par=False)
+        return Iter.new(rng.sample(self.inner, k=amount), par=False)
 
     @qmark
     def choose_multiple_weighted(
@@ -285,7 +293,7 @@ class Vec[T](
         rng: Rng,
         amount: int,
         weight: Fn1[T, float],
-    ) -> Result[Iter[T, Literal[False]], ValueError]:
+    ) -> Result[Iter[T, False_], ValueError]:
         """
         Similar to :meth:`~Vec.choose_multiple`, but where the likelihood of each element’s
         inclusion in the output may be specified. The elements are returned in an arbitrary,
@@ -313,7 +321,7 @@ class Vec[T](
         weights = self.iter().map(call).collect(Vec[float]).into()
         # cap the sample size at the population size
         amount = min(amount, self.len())
-        return Ok(Iter(rng.choices(self.inner, weights=weights, k=amount), par=False))
+        return Ok(Iter.new(rng.choices(self.inner, weights=weights, k=amount), par=False))
 
     def shuffle(self, rng: Rng) -> None:
         rng.shuffle(self.inner)
@@ -380,7 +388,7 @@ if TESTING:
             del item
 
     def test_take():
-        vec = Vec[float].full(3.14, 3)
+        vec = Vec[float].full(math.pi, 3)
         taken = vec.iter().take(2).collect(Vec[float])
         assert len(taken) == 2
         taken = vec.iter().take(5).collect(Vec[float])
@@ -388,10 +396,10 @@ if TESTING:
 
     def test_take_while():
         vec = Vec[float](*range(5))
-        taken = vec.iter().take_while(lambda x: x < 5).collect(Vec[float])
-        assert len(taken) == vec.len()
-        taken = vec.iter().take_while(lambda x: x < 3).collect(Vec[float])
-        assert len(taken) == 3
+        lt5 = vec.iter().take_while(lambda x: x < 5).collect(Vec[float])
+        assert len(lt5) == vec.len()
+        lt3 = vec.iter().take_while(lambda x: x < 3).collect(Vec[float])
+        assert len(lt3) == 3
         vec2 = Vec[Vec[int]](Vec(1, 2, 3))
         ls = [2, 3, 4]
         vec.extend(ls)

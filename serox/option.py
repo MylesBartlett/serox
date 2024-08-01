@@ -15,6 +15,7 @@ from typing import (
     override,
 )
 
+from serox.common import False_, True_
 from serox.convert import From, Into
 from serox.default import Default
 from serox.iter import DoubleEndedIterator, IntoIterator
@@ -301,7 +302,7 @@ def is_null[T](x: Option[T], /) -> TypeGuard[Null[T]]:
     repr=True,
     slots=True,
 )
-class Iter[Item, P: bool](DoubleEndedIterator[Item, P]):
+class Iter[Item, P: (True_, False_)](DoubleEndedIterator[Item, P]):
     item: Option[Item]
     par: P
 

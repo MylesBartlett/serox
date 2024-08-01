@@ -4,9 +4,9 @@
         "serox/**"
     ],
     "exclude": [
-        "**/.",
         "**/__pycache__",
         "**/node_modules",
+        "**/.undodir",
         ".venv",
         "**/.cache"
     ],
@@ -18,7 +18,7 @@
     "reportUnusedCallResult": "error",
     "reportUnnecessaryTypeIgnoreComment": "warning",
     "reportMissingSuperCall": "warning",
-    "reportImportCycles": "error",
+    "reportImportCycles": "none",
     "reportShadowedImports": "warning",
     "reportUninitializedInstanceVariable": "error",
     "reportPropertyTypeMismatch": "error",

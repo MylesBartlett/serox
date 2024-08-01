@@ -2,6 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Generator, Hashable, Iterable, Literal, Sized, override
 
+from serox.common import False_, True_
 from serox.conftest import TESTING
 from serox.convert import Into
 from serox.default import Default
@@ -123,7 +124,7 @@ class HashMap[K: Hashable, V](
 
 
 @dataclass(repr=True, init=False)
-class Keys[K, P: bool](Iterator[K, P]):
+class Keys[K, P: (True_, False_)](Iterator[K, P]):
     def __init__(self, inner: HashMap[K, Any], /, par: P) -> None:
         super().__init__()
         self.iter = iter(inner.inner.keys())
@@ -138,7 +139,7 @@ class Keys[K, P: bool](Iterator[K, P]):
 
 
 @dataclass(repr=True, init=False)
-class Values[V, P: bool](Iterator[V, P]):
+class Values[V, P: (True_, False_)](Iterator[V, P]):
     def __init__(self, inner: HashMap[Any, V], /, par: P) -> None:
         super().__init__()
         self.iter = iter(inner.inner.values())
@@ -153,7 +154,7 @@ class Values[V, P: bool](Iterator[V, P]):
 
 
 @dataclass(repr=True, init=False)
-class Entries[K, V, P: bool](Iterator[Entry[K, V], P]):
+class Entries[K, V, P: (True_, False_)](Iterator[Entry[K, V], P]):
     def __init__(self, inner: HashMap[K, V], /, par: P) -> None:
         super().__init__()
         self.iter = iter(inner.inner.items())

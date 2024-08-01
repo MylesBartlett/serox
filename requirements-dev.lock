@@ -7,6 +7,7 @@
 #   all-features: false
 #   with-sources: false
 #   generate-hashes: false
+#   universal: false
 
 -e file:.
 black==24.4.2
@@ -44,21 +45,21 @@ packaging==24.1
     # via pytest
 pathspec==0.12.1
     # via black
-pip==24.1.2
+pip==24.2
 platformdirs==4.2.2
     # via black
     # via virtualenv
 pluggy==1.5.0
     # via pytest
-pre-commit==3.7.1
+pre-commit==3.8.0
 pydoclint==0.5.6
-pyright==1.1.372
-pytest==8.3.1
+pyright==1.1.374
+pytest==8.3.2
     # via pytest-cov
 pytest-cov==5.0.0
 pyyaml==6.0.1
     # via pre-commit
-ruff==0.5.4
+ruff==0.5.5
 typing-extensions==4.12.2
     # via serox
 virtualenv==20.26.3

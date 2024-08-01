@@ -2,7 +2,7 @@ from __future__ import annotations
 import copy
 from dataclasses import dataclass, field
 from types import EllipsisType
-from typing import Literal, Sized, TypeVar, override
+from typing import Sized, override
 
 from serox.conftest import TESTING
 from serox.fmt import Debug
@@ -10,12 +10,11 @@ from serox.iter import DoubleEndedIterator
 from serox.misc import Clone
 from serox.option import Null, Option, Some
 
+from .common import False_, True_
+
 __all__ = ["Range"]
 
 type Idx = int
-
-P = TypeVar("P", Literal[True], Literal[False])
-P2 = TypeVar("P2", Literal[True], Literal[False])
 
 
 @dataclass(
@@ -24,8 +23,8 @@ P2 = TypeVar("P2", Literal[True], Literal[False])
     init=False,
     repr=False,
 )
-class Range(
-    DoubleEndedIterator[Idx, P],
+class Range[Par: (True_, False_)](
+    DoubleEndedIterator[Idx, Par],
     Clone,
     Debug,
     Sized,
@@ -34,10 +33,10 @@ class Range(
 
     start: Idx = field(init=False)
     end: Idx = field(init=False)
-    par: P = field(init=False)
+    par: Par = field(init=False)
     _ptr: Idx = field(init=False)
 
-    def __init__(self, start: Idx | EllipsisType, end: Idx, *, par: P = False) -> None:
+    def __init__(self, start: Idx | EllipsisType, end: Idx, *, par: Par = False) -> None:
         start = 0 if start is ... else start
         object.__setattr__(self, "start", start)
         object.__setattr__(self, "end", end)
@@ -46,7 +45,9 @@ class Range(
         super().__init__()
 
     @classmethod
-    def new(cls, start: Idx | EllipsisType, end: Idx, *, par: P2 = False) -> Range[P2]:
+    def new[Par2: (True_, False_)](
+        cls, start: Idx | EllipsisType, end: Idx, *, par: Par2 = False
+    ) -> Range[Par2]:
         return Range(start, end, par=par)
 
     @override
@@ -66,8 +67,10 @@ class Range(
         return Null()
 
     @classmethod
-    def from_sized(cls, sized: Sized, /, start: int = 0, *, par: P2 = False) -> Range[P2]:
-        return Range[P2](start, len(sized), par=par)
+    def from_sized[Par2: (True_, False_)](
+        cls, sized: Sized, /, start: int = 0, *, par: Par2 = False
+    ) -> Range[Par2]:
+        return Range[Par2](start, len(sized), par=par)
 
     def contains(self, item: Idx, /) -> bool:
         return self.start <= item < self.end
@@ -76,7 +79,7 @@ class Range(
         return not (self.start < self.end)
 
     @override
-    def clone(self) -> Range[P]:
+    def clone(self) -> Range[Par]:
         return Range(start=self.start, end=self.end, par=self.par)
 
     def len(self) -> int:

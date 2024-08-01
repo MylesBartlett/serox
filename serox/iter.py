@@ -9,7 +9,6 @@ from typing import (
     Callable,
     Generator,
     Iterable,
-    Literal,
     Protocol,
     Self,
     cast,
@@ -25,6 +24,8 @@ from joblib import (  # pyright: ignore[reportMissingTypeStubs]
 )
 
 from serox.cmp import Ord
+from serox.common import False_, True_
+from serox.conftest import TESTING
 from serox.misc import SelfAddable, SelfMultiplicable
 
 if TYPE_CHECKING:
@@ -50,12 +51,13 @@ __all__ = [
     "Zip",
 ]
 
+
 type Fn1[T, U] = Callable[[T], U]
 
 
 class FromIterator[A](Protocol):
     @classmethod
-    def from_iter[P: bool](cls, iter: Iterator[A, P], /) -> Self: ...
+    def from_iter[P: (True_, False_)](cls, iter: Iterator[A, P], /) -> Self: ...
 
 
 def _identity[T](x: T) -> T:
@@ -63,7 +65,7 @@ def _identity[T](x: T) -> T:
 
 
 @runtime_checkable
-class Iterator[Item, Par: bool](Protocol):
+class Iterator[Item, Par: (True_, False_)](Protocol):
     par: Par
 
     def next(self) -> Option[Item]: ...
@@ -195,9 +197,9 @@ class Iterator[Item, Par: bool](Protocol):
     def min[U: Ord](self: Iterator[U, Par]) -> U:
         return min(self)
 
-    def par_bridge(self) -> Iterator[Item, Literal[True]]:
+    def par_bridge(self) -> Iterator[Item, True_]:
         object.__setattr__(self, "par", True)
-        return cast(Iterator[Item, Literal[True]], self)
+        return cast(Iterator[Item, True_], self)
 
 
 class Chunk[Item](list[Item], FromIterator[Item]):
@@ -214,7 +216,7 @@ class Chunk[Item](list[Item], FromIterator[Item]):
 
 
 @dataclass
-class ArrayChunk[Item, P: bool](Iterator[Chunk[Item], P]):
+class ArrayChunk[Item, P: (True_, False_)](Iterator[Chunk[Item], P]):
     iter: Iterator[Item, P]
     n: int
     par: P
@@ -231,14 +233,14 @@ class ArrayChunk[Item, P: bool](Iterator[Chunk[Item], P]):
 
 
 class IntoIterator[T](Protocol):
-    def iter(self) -> Iterator[T, Literal[False]]: ...
+    def iter(self) -> Iterator[T, False_]: ...
 
 
 class IntoParIterator[T](Protocol):
-    def par_iter(self) -> Iterator[T, Literal[True]]: ...
+    def par_iter(self) -> Iterator[T, True_]: ...
 
 
-class DoubleEndedIterator[Item, P: bool](Iterator[Item, P], Protocol):
+class DoubleEndedIterator[Item, P: (True_, False_)](Iterator[Item, P], Protocol):
     def next_back(self) -> Option[Item]: ...
 
     def rev(self) -> Rev[Item, P]:
@@ -246,7 +248,7 @@ class DoubleEndedIterator[Item, P: bool](Iterator[Item, P], Protocol):
 
 
 @dataclass(repr=True)
-class Filter[Item, P: bool](Iterator[Item, P]):
+class Filter[Item, P: (True_, False_)](Iterator[Item, P]):
     iter: Iterator[Item, P]
     f: Fn1[Item, bool]
     par: P
@@ -265,7 +267,7 @@ class Filter[Item, P: bool](Iterator[Item, P]):
 
 
 @dataclass(repr=True)
-class FilterMap[Item, B, P: bool](Iterator[B, P]):
+class FilterMap[Item, B, P: (True_, False_)](Iterator[B, P]):
     iter: Iterator[Item, P]
     f: Fn1[Item, Option[B]]
     par: P
@@ -286,7 +288,7 @@ class FilterMap[Item, B, P: bool](Iterator[B, P]):
 
 
 @dataclass(repr=True)
-class Map[Item, B, P: bool](Iterator[B, P]):
+class Map[Item, B, P: (True_, False_)](Iterator[B, P]):
     iter: Iterator[Item, P]
     f: Fn1[Item, B]
     par: P
@@ -297,7 +299,7 @@ class Map[Item, B, P: bool](Iterator[B, P]):
 
 
 @dataclass(repr=True)
-class Take[Item, P: bool](Iterator[Item, P]):
+class Take[Item, P: (True_, False_)](Iterator[Item, P]):
     iter: Iterator[Item, P]
     _n: int
     par: P
@@ -325,7 +327,7 @@ class Take[Item, P: bool](Iterator[Item, P]):
 
 
 @dataclass(repr=True)
-class TakeWhile[Item, P: bool](Iterator[Item, P]):
+class TakeWhile[Item, P: (True_, False_)](Iterator[Item, P]):
     iter: Iterator[Item, P]
     predicate: Fn1[Item, bool]
     par: P
@@ -349,7 +351,7 @@ class TakeWhile[Item, P: bool](Iterator[Item, P]):
 
 
 @dataclass(repr=True)
-class Zip[A, B, P: bool](Iterator[tuple[A, B], P]):
+class Zip[A, B, P: (True_, False_)](Iterator[tuple[A, B], P]):
     a: Iterator[A, P]
     b: Iterator[B, P]
     par: P
@@ -371,7 +373,7 @@ class Zip[A, B, P: bool](Iterator[tuple[A, B], P]):
 
 # Parametrising the first generic of `Iterator` as `Any` to avoid a circular import.
 @dataclass(repr=True)
-class ZipLongest[A, B, P: bool](Iterator[Any, P]):
+class ZipLongest[A, B, P: (True_, False_)](Iterator[Any, P]):
     a: Iterator[A, P]
     b: Iterator[B, P]
     par: P
@@ -393,7 +395,7 @@ class ZipLongest[A, B, P: bool](Iterator[Any, P]):
 
 
 @dataclass(repr=True)
-class Chain[A, P: bool](Iterator[A, P]):
+class Chain[A, P: (True_, False_)](Iterator[A, P]):
     a: Iterator[A, P]
     b: Iterator[A, P]
     par: P
@@ -410,7 +412,7 @@ class Chain[A, P: bool](Iterator[A, P]):
 
 
 @dataclass(repr=True)
-class Rev[Item, P: bool](Iterator[Item, P]):
+class Rev[Item, P: (True_, False_)](Iterator[Item, P]):
     iter: DoubleEndedIterator[Item, P]
     par: P
 
@@ -426,12 +428,27 @@ class Extend[Item](Protocol):
         self.extend(Some(item))
 
 
-@dataclass(repr=True, init=False)
-class Bridge[Item, P: bool](Iterator[Item, P]):
-    def __init__(self, iter: NativeIterator[Item], par: P = False) -> None:
-        super().__init__()
-        self.iter = iter
-        self.par = par
+@dataclass(repr=True, frozen=True, kw_only=True)
+class Bridge[Item, Par: (True_, False_)](Iterator[Item, Par]):
+    """
+    A bridge between native Python iterators and `serox` ones.
+    Can be parallel (`par = True`) or non-parallel (`par = False`).
+    """
+
+    iter: NativeIterator[Item]
+    """The native Python iterator being bridged."""
+    par: Par
+    """Whether to parallelise the iterator."""
+
+    @classmethod
+    def new[Item2, Par2: (True_, False_)](
+        cls, iter: NativeIterator[Item2], /, par: Par2 = True
+    ) -> Bridge[Item2, Par2]:
+        return Bridge(iter=iter, par=par)
+
+    @classmethod
+    def par_new[Item2](cls, iter: NativeIterator[Item2], /) -> Bridge[Item2, True_]:
+        return Bridge(iter=iter, par=True)
 
     @override
     def next(self) -> Option[Item]:
@@ -441,3 +458,22 @@ class Bridge[Item, P: bool](Iterator[Item, P]):
             return Some(self.iter.__next__())
         except StopIteration:
             return Null()
+
+
+if TESTING:
+
+    def test_par_invariance():
+        from .collections import HashMap
+        from .vec import Vec
+
+        values = Vec(*range(4))
+        keys = ["foo", "bar", "baz"]
+        bridge = Bridge.new(iter(keys), par=False)
+        bridge = Bridge(iter=iter(keys), par=False)
+        mapped = values.iter().map(lambda x: x**2)
+        _ = bridge.zip(mapped).collect(HashMap[str, int])
+
+        bridge = Bridge.new(iter(keys), par=True)
+        # shouldn't be able to combine parallel iterators with non-parallel ones
+        # for consistent typing
+        _ = bridge.zip(values.iter())  # pyright: ignore[reportArgumentType]
