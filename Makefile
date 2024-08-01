@@ -11,6 +11,10 @@ fmt:  ## Run formatters
 lint:  ## Run linters
 	@. ./scripts/lint.sh
 
+.PHONY: test
+test:  ## Run tests
+	@rye test
+
 .PHONY: pre-commit
 pre-commit: ## Run pre-commit hooks
 	@rye run pre-commit run

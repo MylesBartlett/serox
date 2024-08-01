@@ -1,9 +1,9 @@
 from __future__ import annotations  # noqa: I001
 from dataclasses import dataclass
-from serox import Range
 from random import Random as Rng
 from .common import True_, False_
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     Generator,
@@ -33,6 +33,9 @@ from serox.conftest import TESTING
 
 from serox.misc import Clone, SizedIndexable
 from serox.option import Null, Option, Some
+
+if TYPE_CHECKING:
+    from serox import Range
 
 __all__ = [
     "Vec",
@@ -162,6 +165,8 @@ class Vec[T](
         - If given a range, returns the sub-vector corresponding to that range, or `Null` if out of
         bounds.
         """
+        from serox import Range
+
         match index:
             case Range():
                 if index.contains(self.len()):

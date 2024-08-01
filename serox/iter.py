@@ -29,8 +29,8 @@ from serox.conftest import TESTING
 from serox.misc import SelfAddable, SelfMultiplicable
 
 if TYPE_CHECKING:
-    from .option import Null, Option, Some
-    from .result import Result
+    from serox.option import Null, Option, Some
+    from serox.result import Result
 
 
 __all__ = [

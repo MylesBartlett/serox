@@ -17,10 +17,19 @@ repos:
 
   - repo: local
     hooks:
-      - id: make-pre-commit
-        name: Make pre-commit
+      - id: make-fmt
+        name: Make fmt
         description: Formats files using the `make fmt` command
         entry: make fmt
+        language: system
+        pass_filenames: false
+        require_serial: true
+        stages: [commit, merge-commit, push, manual]
+
+      - id: make-test
+        name: Make test
+        description: Run tests using the `make test` command
+        entry: make test
         language: system
         pass_filenames: false
         require_serial: true
