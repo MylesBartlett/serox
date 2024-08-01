@@ -1,5 +1,6 @@
 from __future__ import annotations  # noqa: I001
 from dataclasses import dataclass
+from serox import Range
 from random import Random as Rng
 from .common import True_, False_
 from typing import (
@@ -8,6 +9,7 @@ from typing import (
     Generator,
     Iterable,
     Self,
+    overload,
     override,
 )
 
@@ -147,6 +149,28 @@ class Vec[T](
     @override
     def __getitem__(self, index: int, /) -> T:
         return self.inner[index]
+
+    @overload
+    def get(self, index: Range[Any], /) -> Option[Vec[T]]: ...
+    @overload
+    def get(self, index: int, /) -> Option[T]: ...
+    def get(self, index: int | Range[Any], /) -> Option[T] | Option[Vec[T]]:
+        """
+        Returns an element or sub-vector depending on the type of index.
+
+        - If given a position, returns the element at that position or `Null` if out of bounds.
+        - If given a range, returns the sub-vector corresponding to that range, or `Null` if out of
+        bounds.
+        """
+        match index:
+            case Range():
+                if index.contains(self.len()):
+                    return Some(Vec(*self.inner[index.start : index.end]))
+                return Null()
+            case int():
+                if index >= self.len():
+                    return Null()
+                return Some(self.inner[index])
 
     @override
     def __len__(self) -> int:
