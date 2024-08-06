@@ -1,6 +1,6 @@
 # Serox
 
-Rusty abstractions for Python.
+_Rusty abstractions for Python._
 
 `Serox` defines a emulates a suite of commonly-used Rust abstractions in a manner that is near-fully
 static-type-checker compliant, the exceptions being cases involving higher-kinded types (HKTs; e.g.
@@ -13,7 +13,7 @@ static-type-checker compliant, the exceptions being cases involving higher-kinde
    structure, we cannot implement methods on it directly and instead have to resort to some
    legerdemain.
 
-3. A `Option` pseudo-`enum`. The `T | None` pattern is ubiquitous in Python yet, frustratingly, is
+3. An `Option` pseudo-`enum`. The `T | None` pattern is ubiquitous in Python yet, frustratingly, is
    not treated as a first-class citizen within the language; `Option` is a drop-in replacement that
    redresses this.
 
