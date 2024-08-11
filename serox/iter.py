@@ -442,7 +442,7 @@ class Bridge[Item, Par: (True_, False_)](Iterator[Item, Par]):
 
     @classmethod
     def new[Item2, Par2: (True_, False_)](
-        cls, iter: NativeIterator[Item2], /, par: Par2 = True
+        cls, iter: NativeIterator[Item2], /, par: Par2 = False
     ) -> Bridge[Item2, Par2]:
         return Bridge(iter=iter, par=par)
 
