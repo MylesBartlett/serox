@@ -29,6 +29,18 @@ clean:  ## Clean up caches and build artifacts
 	@rm -rf .venv/
 	@rm -rf .pytest_cache/
 
+.PHONY: bump-patch
+bump-patch: ## Bump patch version and publish
+	@. ./scripts/publish.sh patch
+
+.PHONY: bump-minor
+bump-minor: ## Bump minor version and publish
+	@. ./scripts/publish.sh minor
+
+.PHONY: bump-major
+bump-major: ## Bump major version and publish
+	@. ./scripts/publish.sh major
+
 .PHONY: help
 help:  ## Display this help screen
 	@echo -e "\033[1mAvailable commands:\033[0m"
