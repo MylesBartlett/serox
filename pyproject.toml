@@ -1,6 +1,6 @@
 [project]
 name = "serox"
-version = "0.1.0"
+version = "0.1.1"
 description = "Serpentine Oxidation: Rusty abstractions for Python."
 keywords = [
    "iterators",
