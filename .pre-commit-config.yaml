@@ -24,7 +24,7 @@ repos:
         language: system
         pass_filenames: false
         require_serial: true
-        stages: [commit, merge-commit, push, manual]
+        stages: [pre-commit, pre-merge-commit, pre-push, manual]
 
       - id: make-test
         name: Make test
@@ -33,4 +33,4 @@ repos:
         language: system
         pass_filenames: false
         require_serial: true
-        stages: [commit, merge-commit, push, manual]
+        stages: [pre-commit, pre-merge-commit, pre-push, manual]

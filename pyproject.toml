@@ -32,6 +32,20 @@ requires-python = ">= 3.12"
 build-backend = "hatchling.build"
 requires = ["hatchling"]
 
+[dependency-groups]
+dev = [
+   "basedpyright>=1.21.0",
+   "codespell>=2.3.0",
+   "pre-commit>=4.0.1",
+   "pydoclint>=0.5.9",
+   "pytest-cov>=6.0.0",
+   "pytest>=8.3.3",
+   "ruff>=0.7.3",
+]
+
+[tool.uv]
+managed = true
+
 [tool.rye]
 dev-dependencies = [
    "pytest>=8.3.1",
@@ -142,3 +156,7 @@ fail_under = 70
 
 [tool.coverage.run]
 branch = true
+
+[tool.basedpyright]
+typeCheckingMode = "all"
+reportIgnoreCommentWithoutRule = "error"

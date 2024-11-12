@@ -31,7 +31,7 @@ from .default import Default
 
 from serox.conftest import TESTING
 
-from serox.misc import Clone, SizedIndexable
+from serox.misc import Clone, IndexType, SizedIndexable
 from serox.option import Null, Option, Some
 
 if TYPE_CHECKING:
@@ -51,6 +51,10 @@ class Iter[Item, P: (True_, False_)](DoubleEndedIterator[Item, P]):
     par: P
     end_or_len: int
     ptr: int
+
+    """
+    Wrapper around a native Python :class:`list` to endow it with `Vec`-like functionality.
+    """
 
     @classmethod
     def new[Item2, Par2: (True_, False_)](
@@ -80,6 +84,28 @@ class Iter[Item, P: (True_, False_)](DoubleEndedIterator[Item, P]):
         return self._next(back=True)
 
 
+@dataclass(repr=True, frozen=True, kw_only=True)
+class SampledIndexable[Item](SizedIndexable[Item]):
+    data: SizedIndexable[Item]
+    indices: list[IndexType]
+
+    @classmethod
+    def new[Item2](
+        cls,
+        data: SizedIndexable[Item2],
+        indices: list[IndexType],
+    ) -> SampledIndexable[Item2]:
+        return SampledIndexable(data=data, indices=indices)
+
+    @override
+    def __getitem__(self, index: IndexType, /) -> Item:
+        return self.data[self.indices[index]]
+
+    @override
+    def __len__(self) -> int:
+        return len(self.indices)
+
+
 class Vec[T](
     IntoIterator[T],
     IntoParIterator[T],
@@ -92,7 +118,7 @@ class Vec[T](
     Into[list[T]],
 ):
     """
-    Wrapper around a native Python :class:`list` to endow it with `Vec`-mimetic functionality.
+    Wrapper around a native Python :class:`list` to endow it with `Vec`-like functionality.
     """
 
     def __init__(self, *args: T) -> None:
@@ -102,10 +128,20 @@ class Vec[T](
     @override
     @classmethod
     def default(cls: type[Vec[T]]) -> Vec[T]:
+        """
+        Returns a new, empty `Vec` as the default.
+
+        :returns: A new, empty `Vec`.
+        """
         return Vec[T]()
 
     @classmethod
     def new(cls) -> Vec[T]:
+        """
+        Returns a new, empty `Vec`.
+
+        :returns: A new, empty `Vec`.
+        """
         return Vec[T].default()
 
     @override
@@ -135,6 +171,11 @@ class Vec[T](
         return Iter.new(self, par=True)
 
     def __iter__(self) -> Generator[T, None, None]:
+        """
+        Returns a generator over the elements of the `Vec`.
+
+        :yield: Elements of the `Vec` in order.
+        """
         yield from self.iter()
 
     @override
@@ -207,26 +248,61 @@ class Vec[T](
 
     @classmethod
     def full(cls, value: T, n: int) -> Vec[T]:
+        """
+        Initializes a new `Vec` with `n` copies of `value`.
+
+        :param value: The value to fill the `Vec` with.
+        :param n: The number of copies of `value` to fill the `Vec` with.
+        :returns: A new `Vec` with `n` copies of `value`.
+        """
         return Vec[T](*(value for _ in range(n)))
 
     def push(self, item: T, /) -> None:
+        """
+        Appends an item to the end of the `Vec`.
+
+        :param item: The item to append.
+        """
         self.inner.append(item)
 
     def clear(self) -> None:
+        """
+        Removes all elements from the `Vec`.
+        """
         self.inner.clear()
 
     @override
     def extend(self, items: Iterable[T], /) -> None:
+        """
+        Extends the `Vec` with the elements from the given iterable.
+
+        :param items: The iterable of items to extend the `Vec` with.
+        """
         self.inner.extend(items)
 
     def append(self, other: Self, /):
+        """
+        Appends the elements of another `Vec` to this `Vec`, then clears the other `Vec`.
+
+        :param other: The `Vec` to append.
+        """
         self.inner.extend(other.iter())
         other.clear()
 
     def first(self) -> Option[T]:
+        """
+        Returns the first element of the `Vec`, or `Null` if the `Vec` is empty.
+
+        :returns: The first element of the `Vec`, or `Null` if the `Vec` is empty.
+        """
         return Null() if self.is_empty() else Some(self[0])
 
     def last(self) -> Option[T]:
+        """
+        Returns the last element of the `Vec`, or `Null` if the `Vec` is empty.
+
+        :returns: The last element of the `Vec`, or `Null` if the `Vec` is empty.
+        """
         return Null() if self.is_empty() else Some(self[-1])
 
     def sort_by(
@@ -235,15 +311,31 @@ class Vec[T](
         /,
         reverse: bool = False,
     ) -> None:
+        """
+        Sorts the `Vec` in place using the given comparison function.
+
+        :param compare: The comparison function to use for sorting.
+        :param reverse: If `True`, the `Vec` is sorted in reverse order.
+        """
         self.inner.sort(key=compare, reverse=reverse)
 
     def sort[U: PartialOrd](
         self: Vec[U],
         reverse: bool = False,
     ) -> None:
+        """
+        Sorts the `Vec` in place.
+
+        :param reverse: If `True`, the `Vec` is sorted in reverse order.
+        """
         self.inner.sort(reverse=reverse)
 
     def pop(self) -> Option[T]:
+        """
+        Pop the last element from the vector and return it.
+        :returns: `Some(x)`, where `x` is the last element of the vector if it is not empty,
+            otherwise `Null`.
+        """
         if self.is_empty():
             return Null()
         return Some(self.inner.pop())
@@ -255,7 +347,7 @@ class Vec[T](
 
         :param index: The index of the element to remove.
         :returns: The removed element previously at index `index` of the vector.
-        :raises: :class:`IndexError` if `index` is out of bounds.
+        :raises IndexError: if `index` is out of bounds.
         """
         if index >= self.len():
             raise IndexError(f"removal index (is {index}) should be < len (is {self.len()})")
@@ -274,13 +366,29 @@ class Vec[T](
     @override
     @classmethod
     def from_iter[P: (True_, False_)](cls, s: Iterator[T, P], /) -> Vec[T]:
+        """
+        Creates a new `Vec` from an iterator.
+
+        :param s: The iterator to create the `Vec` from.
+        :returns: A new `Vec` containing the elements from the iterator.
+        """
         return Vec(*s)
 
     @override
     def clone(self) -> Self:
+        """
+        Creates a clone of the `Vec`.
+
+        :returns: A clone of the `Vec`.
+        """
         return super().clone()
 
     def retain(self, f: Fn1[T, bool], /) -> None:
+        """
+        Retains only the elements specified by the predicate function.
+
+        :param f: The predicate function to determine which elements to retain.
+        """
         self.inner = list(filter(f, self.inner))
 
     def choose(self, rng: Rng) -> Option[T]:
@@ -312,9 +420,9 @@ class Vec[T](
         """
         # cap the sample size at the population size
         amount = min(amount, self.len())
-        # TODO: Sample indices instead, passing them to a dedicated iterator to lazily sample
-        # elements from `inner`.
-        return Iter.new(rng.sample(self.inner, k=amount), par=False)
+        # sample without replacement
+        sampled_indices = rng.sample(range(self.len()), k=amount)
+        return Iter.new(SampledIndexable.new(self, sampled_indices), par=False)
 
     @qmark
     def choose_multiple_weighted(
@@ -353,24 +461,63 @@ class Vec[T](
         return Ok(Iter.new(rng.choices(self.inner, weights=weights, k=amount), par=False))
 
     def shuffle(self, rng: Rng) -> None:
+        """
+        Shuffles the elements of the `Vec` in place using the given random number generator.
+
+        :param rng: The random number generator to use for shuffling.
+        """
         rng.shuffle(self.inner)
 
     def fill(self, value: T, /) -> None:
+        """
+        Fills the `Vec` with the given value.
+
+        :param value: The value to fill the `Vec` with.
+        """
         self.inner = self.len() * [value]
 
     def fill_with(self, f: Fn0[T], /) -> None:
+        """
+        Fills the `Vec` with values generated by the given function.
+
+        :param f: The function to generate values to fill the `Vec` with.
+        """
         self.inner = [f() for _ in range(self.len())]
 
     def join[U: str](self: Vec[U], separator: U, /) -> U:
+        """
+        Joins the elements of the `Vec` into a string, separated by the given separator.
+
+        :param separator: The separator to use between elements.
+        :returns: A string with the elements of the `Vec` joined by `separator`.
+        """
         return separator.join(self.inner)
 
     def repeat(self, n: int, /) -> Vec[T]:
+        """
+        Repeats the elements of the `Vec` `n` times.
+
+        :param n: The number of times to repeat the elements.
+        :returns: A new `Vec` with the elements repeated `n` times.
+        """
         return Vec(*(self.inner * n))
 
     def flatten[U](self: Vec[Vec[U]]) -> Vec[U]:
+        """
+        Flattens a `Vec` of `Vec`s into a single `Vec`.
+
+        :returns: A new `Vec` with the elements of the inner `Vec`s.
+        """
         return Vec(*(inner for outer in self for inner in outer))
 
     def dedup(self) -> None:
+        """
+        Removes consecutive duplicate elements from the `Vec`.
+
+        This method retains only the first occurrence of each group of consecutive duplicate elements.
+
+        :returns: None
+        """
         # iterator to start from the second (first) element
         next_iter = self.iter()
         # offset the iterator by one. If there is no second element, return `Null`, otherwise
@@ -399,22 +546,25 @@ class Vec[T](
 if TESTING:
     import math
 
-    def test_vec():
+    def test_sort():
+        vec = Vec[int](3, 2, 1)
+        vec.sort()
+        assert vec == Vec(1, 2, 3)
+        vec.sort(reverse=True)
+        assert vec == Vec(3, 2, 1)
+        vec.sort_by(lambda x: -x, reverse=True)
+        assert vec == Vec(1, 2, 3)
+
+    def test_filter():
+        vec = Vec[int](1, 2, 3, 6)
+        evens = vec.iter().filter(lambda x: x % 2 == 0).collect(Vec[int])
+        assert evens == Vec(2, 6)
+
+    def test_chain():
         vec = Vec[int](1, 2, 3)
-        assert vec.len() == 3
-        assert vec == Vec[float](1.0, 2, 3)
         vec2 = Vec[int](2, 3, 4)
-        _: Vec[int] = vec.iter().map(lambda x: x * 2).zip(vec2.iter()).collect(Vec)
-        res = vec.iter().chain(vec2.iter()).collect(Vec[int])
-
-        evens = vec.iter().filter(lambda x: bool(1 & ~x)).collect(Vec[int])
-        assert evens == Vec(2)
-
-        Vec(Vec[int].default()).sort_by(lambda x: x.len())
-        res.sort()
-
-        for item in res:
-            del item
+        res: Vec[int] = vec.iter().chain(vec2.iter()).collect(Vec)
+        assert res == Vec(1, 2, 3, 2, 3, 4)
 
     def test_take():
         vec = Vec[float].full(math.pi, 3)
@@ -436,13 +586,17 @@ if TESTING:
 
     def test_par_iter():
         vec = Vec[float].full(3.14, n=3)
-        _ = vec.par_iter().take(2).collect(Vec[float])
+        res = vec.par_iter().take(2).collect(Vec[float])
+        assert len(res) == 2
 
     def test_agg():
-        vec = Vec[float].full(3.14, n=3)
-        _ = vec.iter().sum()
-        _ = vec.iter().product()
-        _ = vec.iter().max()
+        vec = Vec[float](1.0, 2.0, 3.0, -3.0)
+        sum_ = vec.iter().sum()
+        assert sum_ == 3.0
+        prod = vec.iter().product()
+        assert prod == -18.0
+        max_ = vec.iter().max()
+        assert max_ == 3.0
 
     def test_chunking():
         vec = Vec(*range(97))

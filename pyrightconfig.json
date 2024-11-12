@@ -1,5 +1,4 @@
 {
-    "$schema": "pyrightconfig.schema.json",
     "include": [
         "serox/**"
     ],

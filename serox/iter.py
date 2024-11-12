@@ -61,6 +61,9 @@ class FromIterator[A](Protocol):
 
 
 def _identity[T](x: T) -> T:
+    """
+    Identity function that returns the input value.
+    """
     return x
 
 
@@ -477,3 +480,157 @@ if TESTING:
         # shouldn't be able to combine parallel iterators with non-parallel ones
         # for consistent typing
         _ = bridge.zip(values.iter())  # pyright: ignore[reportArgumentType]
+
+    def test_max():
+        """Test the max method for iterators."""
+        from .vec import Vec
+
+        vec = Vec(1, 2, 3, 4, 5)
+        assert vec.iter().max() == 5
+
+    def test_iterator_methods():
+        from .option import Null, Some
+        from .result import Err, Ok
+        from .vec import Vec
+
+        vec = Vec(1, 2, 3, 4, 5)
+        iter = vec.iter()
+
+        # Test next
+        assert iter.next() == Some(1)
+        assert iter.next() == Some(2)
+
+        # Test nth
+        assert iter.nth(2) == Some(5)
+        assert iter.nth(1) == Null()
+
+        # Test advance_by
+        iter = vec.iter()
+        assert iter.advance_by(3) == Ok(None)
+        assert iter.advance_by(3) == Err(1)
+
+        # Test for_each
+        result: list[int] = []
+        iter = vec.iter()
+        iter.for_each(lambda x: result.append(x))
+        assert result == [1, 2, 3, 4, 5]
+
+        # Test take
+        iter = vec.iter().take(3)
+        assert list(iter) == [1, 2, 3]
+
+        # Test take_while
+        iter = vec.iter().take_while(lambda x: x < 4)
+        assert list(iter) == [1, 2, 3]
+
+        # Test sum
+        assert vec.iter().sum() == 15
+
+        # Test product
+        assert vec.iter().product() == 120
+
+        # Test all
+        assert vec.iter().all(lambda x: x > 0)
+        assert not vec.iter().all(lambda x: x < 3)
+
+        # Test any
+        assert vec.iter().any(lambda x: x == 3)
+        assert not vec.iter().any(lambda x: x == 6)
+
+        # Test max
+        assert vec.iter().max() == 5
+
+        # Test min
+        assert vec.iter().min() == 1
+
+    def test_combinational_methods():
+        from .option import Null, Some
+        from .vec import Vec
+
+        vec1 = Vec(1, 2, 3)
+        vec2 = Vec(4, 5, 6)
+        iter1 = vec1.iter()
+        iter2 = vec2.iter()
+
+        # Test zip
+        zipped = iter1.zip(iter2)
+        assert list(zipped) == [(1, 4), (2, 5), (3, 6)]
+
+        # Test zip_longest
+        iter1 = vec1.iter()
+        iter2 = Vec(4, 5).iter()
+        zipped_longest = iter1.zip_longest(iter2)
+        assert list(zipped_longest) == [(1, 4), (2, 5), (3, Null())]
+
+        # Test chain
+        iter1 = vec1.iter()
+        iter2 = vec2.iter()
+        chained = iter1.chain(iter2)
+        assert list(chained) == [1, 2, 3, 4, 5, 6]
+
+        # Test map
+        iter = vec1.iter().map(lambda x: x * 2)
+        assert list(iter) == [2, 4, 6]
+
+        # Test filter
+        iter = vec1.iter().filter(lambda x: x % 2 == 1)
+        assert list(iter) == [1, 3]
+
+        # Test filter_map
+        iter = vec1.iter().filter_map(lambda x: Some(x * 2) if x % 2 == 0 else Null())
+        assert list(iter) == [4]
+
+    def test_parallel_iterators():
+        from .option import Null, Some
+        from .result import Err, Ok
+        from .vec import Vec
+
+        vec = Vec(1, 2, 3, 4, 5)
+        iter = vec.par_iter()
+
+        # Test next
+        assert iter.next() == Some(1)
+        assert iter.next() == Some(2)
+
+        # Test nth
+        assert iter.nth(2) == Some(5)
+        assert iter.nth(1) == Null()
+
+        # Test advance_by
+        iter = vec.par_iter()
+        assert iter.advance_by(3) == Ok(None)
+        assert iter.advance_by(3) == Err(1)
+
+        # Test for_each
+        result: list[int] = []
+        iter = vec.par_iter()
+        iter.for_each(lambda x: result.append(x))
+        assert result == [1, 2, 3, 4, 5]
+
+        # Test take
+        iter = vec.par_iter().take(3)
+        assert list(iter) == [1, 2, 3]
+
+        # Test take_while
+        iter = vec.par_iter().take_while(lambda x: x < 4)
+        assert list(iter) == [1, 2, 3]
+
+        # Test sum
+        assert vec.par_iter().sum() == 15
+
+        # Test product
+        assert vec.par_iter().product() == 120
+
+        # Test all
+        assert vec.par_iter().all(lambda x: x > 0)
+        assert not vec.par_iter().all(lambda x: x < 3)
+
+        # Test any
+        assert vec.par_iter().any(lambda x: x == 3)
+        assert not vec.par_iter().any(lambda x: x == 6)
+
+        # Test max
+        assert vec.par_iter().max() == 5
+
+        # Test min
+        assert vec.par_iter().min() == 1
