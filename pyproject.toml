@@ -4,6 +4,7 @@ version = "0.1.1"
 description = "Serpentine Oxidation: Rusty abstractions for Python."
 keywords = [
    "iterators",
+   "monads",
    "option",
    "protocols",
    "python",
@@ -15,10 +16,12 @@ keywords = [
    "typing",
 ]
 authors = [{ name = "Myles Bartlett" }]
+license = "MIT"
 classifiers = [
    "Programming Language :: Python :: 3.12",
    "Operating System :: OS Independent",
    "Typing :: Typed",
+   "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
    "numpy>=1.26.3",
@@ -61,6 +64,7 @@ dev-dependencies = [
    "bump2version>=1.0.1",
 ]
 managed = true
+repository = "https://github.com/MylesBartlett/serox"
 
 [tool.hatch.metadata]
 allow-direct-references = true
