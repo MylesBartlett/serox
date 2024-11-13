@@ -106,7 +106,6 @@ lint.ignore = [
    "PLW2901", # overwriting loop variable
    "PLC0105", # covariant typevars have to end in "_co"
 ]
-lint.per-file-ignores = { "__init__.py" = ["F403"] }
 lint.select = [
    "E", # pycodestyle
    "F", # pyflakes
@@ -121,6 +120,10 @@ lint.select = [
    "W",
 ]
 target-version = "py310"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F403"]
+"prelude" = ["F403"]
 
 [tool.ruff.lint.isort]
 case-sensitive = true

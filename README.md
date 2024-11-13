@@ -1,10 +1,14 @@
 # Serox
 
-_Rusty abstractions for Python._
+_Rusty abstractions for Python_
 
-`Serox` defines a emulates a suite of commonly-used Rust abstractions in a manner that is near-fully
+`serox` provides a suite of commonly-used Rust abstractions in a manner that is near-fully
 static-type-checker compliant, the exceptions being cases involving higher-kinded types (HKTs; e.g.
-`Iterator.collect`) as these are not currently supported by Python's type system. Namely:
+`Iterator.collect`) as these are not currently supported by Python's type system.
+
+The subset of abstractions most broadly-applicable are importable from `serox.prelude`.
+
+## Features
 
 1. `Iterator` combinators that allow for the seamless chaining of operations over data with
    [rayon]-inspired functionality for effortless parallelism.
@@ -18,23 +22,54 @@ static-type-checker compliant, the exceptions being cases involving higher-kinde
    redresses this.
 
 4. The `qmark` decorator emulates the '?' (error/null short-circuiting) operator, allowing for
-   propagation of error and null values without interrupting the control flow. Without this, one has
+   propagation of error and null values without disrupting the control flow. Without this, one has
    to resort to awkward pattern-matching to perform common operations such as `unwrap_or` (setting
    `Null` to a default value) or `map` (applying a function to the contained value if `Some`).
 
+## Example
+
+Early exiting (in the fashion of Rust's `?` operator) an Option/Result-returning function is enabled
+by the `qmark` ('question mark') decorator:
+
 ```python
-from serox import Option, qmark
+from serox.prelude import *
 
 @qmark
-def some_function(foo: Option[str]) -> Option[str]:
-    foo_bar: str = value.map(lambda x: x + "bar").q
-    return Some(foo_bar + "_baz")
+def some_function(value: Option[int]) -> Option[float]:
+    squared: int = value.map(lambda x: x ** 2).q
+    # The above expands to the rather verbose:
+    # match value:
+    #     case Null():
+    #         return Null[float]()
+    #     case Some(x):
+    #         squared = value ** 2
+
+    return Some(1.0 / squared)
 ```
 
-[rayon]: https://github.com/rayon-rs/rayon
+## Requirements
+
+Python version `>=3.12.3` is required for typing purposes.
+
+## Installation
+
+`serox` is available on PyPI and thus the latest version can be installed via `pip` with
+
+```sh
+pip install serox
+```
+
+or via [uv] with
+
+```sh
+uv add serox
+```
 
 ## Acknowledgements
 
 Credit to [result](https://github.com/rustedpy/result) and
 [rustshed](https://github.com/pawelrubin/rustshed/) for laying the groundwork for the `Result` and
 `qmark` implementations.
+
+[rayon]: https://github.com/rayon-rs/rayon
+[uv]: https://docs.astral.sh/uv/

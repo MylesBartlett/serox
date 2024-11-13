@@ -12,6 +12,7 @@
 -e file:.
 black==24.4.2
 bump2version==1.0.1
+    # via serox
 cfgv==3.4.0
     # via pre-commit
 click==8.1.7
