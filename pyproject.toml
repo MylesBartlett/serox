@@ -18,10 +18,10 @@ keywords = [
 authors = [{ name = "Myles Bartlett" }]
 license = "MIT"
 classifiers = [
-   "Programming Language :: Python :: 3.12",
-   "Operating System :: OS Independent",
-   "Typing :: Typed",
    "License :: OSI Approved :: MIT License",
+   "Operating System :: OS Independent",
+   "Programming Language :: Python :: 3.12",
+   "Typing :: Typed",
 ]
 dependencies = [
    "numpy>=1.26.3",
