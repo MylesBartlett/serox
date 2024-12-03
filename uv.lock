@@ -349,13 +349,13 @@ name = "serox"
 version = "0.1.2"
 source = { editable = "." }
 dependencies = [
-    { name = "bump2version" },
     { name = "joblib" },
 ]
 
 [package.dev-dependencies]
 dev = [
     { name = "basedpyright" },
+    { name = "bump2version" },
     { name = "codespell" },
     { name = "deptry" },
     { name = "pre-commit" },
@@ -366,14 +366,12 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "bump2version", specifier = ">=1.0.1" },
-    { name = "joblib", specifier = ">=1.4.2" },
-]
+requires-dist = [{ name = "joblib", specifier = ">=1.4.2" }]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "basedpyright", specifier = ">=1.21.0" },
+    { name = "bump2version", specifier = ">=1.0.1" },
     { name = "codespell", specifier = ">=2.3.0" },
     { name = "deptry", specifier = ">=0.21.1" },
     { name = "pre-commit", specifier = ">=4.0.1" },

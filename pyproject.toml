@@ -25,7 +25,6 @@ classifiers = [
 ]
 dependencies = [
    "joblib>=1.4.2",
-   "bump2version>=1.0.1",
 ]
 readme = "README.md"
 requires-python = ">= 3.12"
@@ -37,35 +36,30 @@ requires = ["hatchling"]
 [dependency-groups]
 dev = [
    "basedpyright>=1.21.0",
+   "bump2version>=1.0.1",
    "codespell>=2.3.0",
+   "deptry>=0.21.1",
    "pre-commit>=4.0.1",
    "pydoclint>=0.5.9",
    "pytest-cov>=6.0.0",
    "pytest>=8.3.3",
    "ruff>=0.7.3",
-   "deptry>=0.21.1",
 ]
 
 [tool.uv]
 managed = true
 
-[tool.deptry.per_rule_ignores]
-DEP004 = ["pytest"]
-DEP002 = ["bump2version"]
-
 [tool.rye]
 dev-dependencies = [
-   "pytest>=8.3.1",
-   "pytest-cov>=5.0.0",
-   "codespell>=2.3.0",
-   "pydoclint>=0.5.6",
-   "pip>=24.1.2",
-   "pre-commit>=3.7.1",
-   "pyright>=1.1.372",
-   "ruff>=0.5.4",
-   "black[colorama]>=24.4.2",
+   "basedpyright>=1.21.0",
    "bump2version>=1.0.1",
+   "codespell>=2.3.0",
    "deptry>=0.21.1",
+   "pre-commit>=4.0.1",
+   "pydoclint>=0.5.9",
+   "pytest-cov>=6.0.0",
+   "pytest>=8.3.3",
+   "ruff>=0.7.3",
 ]
 managed = true
 repository = "https://github.com/MylesBartlett/serox"
@@ -80,6 +74,10 @@ packages = ["serox"]
 count = false
 ignore-words-list = "crate"
 skip = ".git"
+
+[tool.deptry.per_rule_ignores]
+DEP002 = ["bump2version"]
+DEP004 = ["pytest"]
 
 [tool.pydoclint]
 style = "sphinx"
@@ -136,27 +134,8 @@ target-version = "py310"
 [tool.ruff.lint.isort]
 case-sensitive = true
 classes = []
-extra-standard-library = ["typing_extensions"]
 force-sort-within-sections = true
-known-third-party = [
-   "black",
-   "hydra",
-   "matplotlib",
-   "mypy",
-   "numpy",
-   "omegaconf",
-   "pandas",
-   "pylint",
-   "pytest",
-   "pytorch_grad_cam",
-   "pytorch_lightning",
-   "scipy",
-   "setuptools",
-   "sklearn",
-   "torch",
-   "tqdm",
-   "wandb",
-]
+known-third-party = ["pytest"]
 no-lines-before = ["future", "standard-library"]
 split-on-trailing-comma = false
 
