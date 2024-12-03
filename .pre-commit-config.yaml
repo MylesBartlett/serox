@@ -25,6 +25,14 @@ repos:
         pass_filenames: false
         require_serial: true
         stages: [pre-commit, pre-merge-commit, pre-push, manual]
+      - id: make-lint
+        name: Make lint
+        description: Lints files using the `make lint` command
+        entry: make lint
+        language: system
+        pass_filenames: false
+        require_serial: true
+        stages: [pre-commit, pre-merge-commit, pre-push, manual]
 
       - id: make-test
         name: Make test

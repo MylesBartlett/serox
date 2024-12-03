@@ -14,7 +14,5 @@ bump2version==1.0.1
     # via serox
 joblib==1.4.2
     # via serox
-numpy==2.0.1
-    # via serox
 typing-extensions==4.12.2
     # via serox

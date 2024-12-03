@@ -24,9 +24,7 @@ classifiers = [
    "Typing :: Typed",
 ]
 dependencies = [
-   "numpy>=1.26.3",
    "joblib>=1.4.2",
-   "typing-extensions>=4.12.2",
    "bump2version>=1.0.1",
 ]
 readme = "README.md"
@@ -45,10 +43,15 @@ dev = [
    "pytest-cov>=6.0.0",
    "pytest>=8.3.3",
    "ruff>=0.7.3",
+   "deptry>=0.21.1",
 ]
 
 [tool.uv]
 managed = true
+
+[tool.deptry.per_rule_ignores]
+DEP004 = ["pytest"]
+DEP002 = ["bump2version"]
 
 [tool.rye]
 dev-dependencies = [
@@ -62,6 +65,7 @@ dev-dependencies = [
    "ruff>=0.5.4",
    "black[colorama]>=24.4.2",
    "bump2version>=1.0.1",
+   "deptry>=0.21.1",
 ]
 managed = true
 repository = "https://github.com/MylesBartlett/serox"

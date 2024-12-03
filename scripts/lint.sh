@@ -15,6 +15,7 @@ rye run lint-doc
 # spelling
 ## codespell
 echo "[codespell] Checking spelling..."
-rye run codespell
+uv run codespell
+uv run deptry .
 
 echo "✨ Done linting ✨"

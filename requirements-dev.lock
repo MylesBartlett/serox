@@ -17,12 +17,14 @@ cfgv==3.4.0
     # via pre-commit
 click==8.1.7
     # via black
+    # via deptry
     # via pydoclint
 codespell==2.3.0
 colorama==0.4.6
     # via black
 coverage==7.6.0
     # via pytest-cov
+deptry==0.21.1
 distlib==0.3.8
     # via virtualenv
 docstring-parser-fork==0.0.9
@@ -40,11 +42,11 @@ mypy-extensions==1.0.0
 nodeenv==1.9.1
     # via pre-commit
     # via pyright
-numpy==2.0.1
-    # via serox
 packaging==24.1
     # via black
+    # via deptry
     # via pytest
+    # via requirements-parser
 pathspec==0.12.1
     # via black
 pip==24.2
@@ -61,7 +63,11 @@ pytest==8.3.2
 pytest-cov==5.0.0
 pyyaml==6.0.1
     # via pre-commit
+requirements-parser==0.11.0
+    # via deptry
 ruff==0.5.5
+types-setuptools==75.6.0.20241126
+    # via requirements-parser
 typing-extensions==4.12.2
     # via serox
 virtualenv==20.26.3
