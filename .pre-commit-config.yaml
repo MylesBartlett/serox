@@ -17,27 +17,28 @@ repos:
 
   - repo: local
     hooks:
-      - id: make-fmt
-        name: Make fmt
+      - id: task-fmt
+        name: format
         description: Formats files using the `make fmt` command
-        entry: make fmt
-        language: system
-        pass_filenames: false
-        require_serial: true
-        stages: [pre-commit, pre-merge-commit, pre-push, manual]
-      - id: make-lint
-        name: Make lint
-        description: Lints files using the `make lint` command
-        entry: make lint
+        entry: task fmt
         language: system
         pass_filenames: false
         require_serial: true
         stages: [pre-commit, pre-merge-commit, pre-push, manual]
 
-      - id: make-test
-        name: Make test
+      - id: task-lint
+        name: lint
+        description: Lints files using the `make lint` command
+        entry: task lint
+        language: system
+        pass_filenames: false
+        require_serial: true
+        stages: [pre-commit, pre-merge-commit, pre-push, manual]
+
+      - id: task-test
+        name: test
         description: Run tests using the `make test` command
-        entry: make test
+        entry: task test
         language: system
         pass_filenames: false
         require_serial: true

@@ -1,0 +1,56 @@
+---
+version: 3
+tasks:
+  install:
+    desc: Set up environment and install dev tools
+    cmds:
+      - uv sync
+      - uv run pre-commit install
+      - . ./scripts/install-linters-formatters.sh
+    silent: false
+  fmt:
+    desc: Run formatters
+    cmds:
+      - . ./scripts/fmt.sh
+    silent: false
+  lint:
+    desc: Run linters
+    cmds:
+      - . ./scripts/lint.sh
+    silent: false
+  test:
+    desc: Run tests
+    cmds:
+      - uv run pytest --cov
+    silent: false
+  pre-commit:
+    desc: Run pre-commit hooks
+    cmds:
+      - rye run pre-commit run
+    silent: false
+  workflow:
+    desc: Run workflows
+    cmds:
+      - . ./scripts/run-workflows.sh
+  clean:
+    desc: Clean up caches and build artifacts
+    cmds:
+      - rm -rf .ruff_cache/
+      - rm -rf .venv/
+      - rm -rf .pytest_cache/
+    silent: false
+  bump-patch:
+    desc: Bump patch version and publish
+    cmds:
+      - . ./scripts/publish.sh patch
+    silent: false
+  bump-minor:
+    desc: Bump minor version and publish
+    cmds:
+      - . ./scripts/publish.sh minor
+    silent: false
+  bump-major:
+    desc: Bump major version and publish
+    cmds:
+      - . ./scripts/publish.sh major
+    silent: false

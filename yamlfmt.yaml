@@ -1,0 +1,20 @@
+---
+# https://github.com/google/yamlfmt/blob/main/docs/config-file.md
+doublestar: true
+include:
+  - './**/*.{yaml,yml}'
+exclude:
+  - '**/.hydra/**'
+  - '**/.venv/**'
+  - '**/target/**'
+  - '**/node_modules/**'
+  - '**/.undodir/**'
+formatter:
+  type: basic
+  include_document_start: true
+  indent: 2
+  max_line_length: 100
+  indentless_arrays: false
+  retain_line_breaks: true
+  retain_line_breaks_single: true
+  pad_line_comments: 1
