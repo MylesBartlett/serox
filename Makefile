@@ -13,7 +13,7 @@ lint:  ## Run linters
 
 .PHONY: test
 test:  ## Run tests
-	@rye test
+	@uv run pytest --cov
 
 .PHONY: pre-commit
 pre-commit: ## Run pre-commit hooks
