@@ -44,7 +44,7 @@ class HashSet[T: Hashable](
 
     @override
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({ repr(self.inner) })"
+        return f"{self.__class__.__name__}({repr(self.inner)})"
 
     def clear(self) -> None:
         self.inner.clear()

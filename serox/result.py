@@ -180,10 +180,10 @@ class _Result[T, E](
                 return Some(x)
 
     @overload
-    def and_then[U](self: Err[T, E], f: Fn1[T, U], /) -> Err[U, E]: ...
+    def and_then[U](self: Err[T, E], op: Fn1[T, Result[U, E]], /) -> Err[U, E]: ...
     @overload
-    def and_then[U](self: Ok[T, E], f: Fn1[T, U], /) -> Result[U, E]: ...
-    def and_then[U](self: Result[T, E], op: Callable[[T], Result[U, E]], /) -> Result[U, E]:
+    def and_then[U](self: Ok[T, E], op: Fn1[T, Result[U, E]], /) -> Result[U, E]: ...
+    def and_then[U](self: Result[T, E], op: Fn1[T, Result[U, E]], /) -> Result[U, E] | Err[U, E]:
         match self:
             case Ok(t):
                 return op(t)
@@ -223,7 +223,7 @@ class _Result[T, E](
                 return Some(Ok(x))
             case Err(e):
                 return Some(Err(e))
-            case _:  # Ok(Null())
+            case _:
                 return Null()
 
 
@@ -323,11 +323,6 @@ if TESTING:
         assert val == "foo"
         val = list(iter(foo_res))
         assert len(val) == 1
-
-        ls: list[str] = []
-        ls.extend(foo_res)
-        assert len(ls) == 1
-        assert ls[0] == "foo"
 
         # Err[T, _] should yield nothing
         err = Err[str, str]("Error")

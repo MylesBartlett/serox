@@ -4,6 +4,7 @@ _Rusty abstractions for Python_
 
 `serox` provides a suite of commonly-used Rust abstractions in a manner that is near-fully
 static-type-checker compliant, the exceptions being cases involving higher-kinded types (HKTs; e.g.
+
 `Iterator.collect`) as these are not currently supported by Python's type system.
 
 The subset of abstractions most broadly-applicable are importable from `serox.prelude`.

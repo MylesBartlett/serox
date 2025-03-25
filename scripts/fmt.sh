@@ -17,6 +17,6 @@ yamlfmt
 
 # python
 echo "[ruff] Formatting .py files..."
-rye run fmt
+uv tool run ruff format
 
 echo "✨ Done formatting ✨"

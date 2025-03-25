@@ -50,9 +50,7 @@ keys = [
 formatting = { reorder_keys = true }
 include = ["**/pyproject.toml"]
 keys = [
-   "project.optional-dependencies",
-   "tool.rye",
-   "tool.rye.scripts",
+   "tool.uv",
    "build-system",
 ]
 

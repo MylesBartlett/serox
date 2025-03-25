@@ -484,7 +484,7 @@ class Vec[T](
         """
         self.inner = [f() for _ in range(self.len())]
 
-    def join[U: str](self: Vec[U], separator: U, /) -> U:
+    def join[U](self: Vec[str], separator: str, /) -> str:
         """
         Joins the elements of the `Vec` into a string, separated by the given separator.
 

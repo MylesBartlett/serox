@@ -13,10 +13,12 @@ dprint check
 
 # python
 echo "[ruff] Checking .py files..."
-rye fmt --check
-rye lint
-# lint docstrings
-rye run lint-doc
+# run the ruff formatter on all .py files in "check" mode
+uv tool run ruff format --check
+# run the ruff linter on all .py files
+uv tool run ruff check
+# lint python docstrings with pydocstyle
+uv run pydoclint
 
 # yaml
 echo "[yamlfmt] Checking .y[a]ml..."

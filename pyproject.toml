@@ -29,6 +29,9 @@ dependencies = [
 readme = "README.md"
 requires-python = ">= 3.12"
 
+[project.urls]
+Repository = "https://github.com/MylesBartlett/serox"
+
 [build-system]
 build-backend = "hatchling.build"
 requires = ["hatchling"]
@@ -48,21 +51,6 @@ dev = [
 
 [tool.uv]
 managed = true
-
-[tool.rye]
-dev-dependencies = [
-   "basedpyright>=1.21.0",
-   "bump2version>=1.0.1",
-   "codespell>=2.3.0",
-   "deptry>=0.21.1",
-   "pre-commit>=4.0.1",
-   "pydoclint>=0.5.9",
-   "pytest-cov>=6.0.0",
-   "pytest>=8.3.3",
-   "ruff>=0.7.3",
-]
-managed = true
-repository = "https://github.com/MylesBartlett/serox"
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -86,20 +74,6 @@ arg-type-hints-in-docstring = false
 check-return-types = false
 check-yield-types = false
 exclude = '.git|.undodir/|.venv'
-
-[tool.rye.scripts]
-lint-doc = { cmd = "pydoclint ." }
-pydoclint = { cmd = "pydoclint ." }
-sort = { cmd = "rye run ruff check --select I --fix ." }
-test = { cmd = "pytest . " }
-test-cov = { cmd = "pytest . --cov ." }
-test-doc = { cmd = "pytest . --doctest-modules" }
-type-check = { cmd = "rye run pyright --verbose" }
-# Currently, the Ruff formatter does not sort imports. In order to both sort
-# imports and format, call the Ruff linter and then the formatter.
-fmt = { chain = ["fmt:imports", "fmt:main"] }
-"fmt:imports" = "rye run ruff check --select I --fix"
-"fmt:main" = "rye fmt -a"
 
 [tool.ruff]
 format.docstring-code-format = true

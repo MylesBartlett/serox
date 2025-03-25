@@ -18,6 +18,13 @@ tasks:
     cmds:
       - . ./scripts/lint.sh
     silent: false
+
+  type-check:
+    desc: Type check with basedpyright
+    cmds:
+      - uv run basedpyright .
+    silent: false
+
   test:
     desc: Run tests
     cmds:
@@ -26,10 +33,11 @@ tasks:
   pre-commit:
     desc: Run pre-commit hooks
     cmds:
-      - rye run pre-commit run
+      - uv run pre-commit run
     silent: false
+
   workflow:
-    desc: Run workflows
+    desc: Run github workflows locally with `gh act`
     cmds:
       - . ./scripts/run-workflows.sh
   clean:
@@ -39,6 +47,8 @@ tasks:
       - rm -rf .venv/
       - rm -rf .pytest_cache/
     silent: false
+
+  # Versioning tasks
   bump-patch:
     desc: Bump patch version and publish
     cmds:

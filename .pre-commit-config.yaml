@@ -19,7 +19,7 @@ repos:
     hooks:
       - id: task-fmt
         name: format
-        description: Formats files using the `make fmt` command
+        description: Formats files using the `task fmt` command
         entry: task fmt
         language: system
         pass_filenames: false
@@ -28,8 +28,17 @@ repos:
 
       - id: task-lint
         name: lint
-        description: Lints files using the `make lint` command
+        description: Lints files using the `task lint` command
         entry: task lint
+        language: system
+        pass_filenames: false
+        require_serial: true
+        stages: [pre-commit, pre-merge-commit, pre-push, manual]
+
+      - id: task-type-check
+        name: type-check
+        description: Type checks python files using the `task type-check` command
+        entry: task type-check
         language: system
         pass_filenames: false
         require_serial: true
