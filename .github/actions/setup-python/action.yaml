@@ -1,21 +1,21 @@
 ---
 name: 'Python Setup'
-description: 'Sets up a Python runtime with Rye'
+description: 'Sets up a Python runtime with uv'
 inputs:
-  rye-version:
-    description: 'Which version of Rye to use.'
+  uv-version:
+    description: 'Which version of uv to use.'
     required: false
     default: "latest"
   cache-prefix:
     description: 'Prefix to attach to the virtual-envrionment cache.'
     required: false
-    default: "rye-venv"
+    default: "uv-venv"
 runs:
   using: 'composite'
   steps:
-    - name: Set up rye
-      uses: eifinger/setup-rye@v1.15.0
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v3
       with:
-        enable_cache: true
-        version: ${{ inputs.rye-version }}
-        cache-prefix: ${{ inputs.cache-prefix}}
+        enable-cache: true
+        version: ${{ inputs.uv-version }}
+        cache-suffix: ${{ inputs.cache-prefix}}
