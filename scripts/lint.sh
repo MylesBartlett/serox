@@ -17,8 +17,8 @@ echo "[ruff] Checking .py files..."
 uv tool run ruff format --check
 # run the ruff linter on all .py files
 uv tool run ruff check
-# lint python docstrings with pydocstyle
-uv run pydoclint
+# lint python docstrings with pydoclint
+uv run pydoclint serox/
 
 # yaml
 echo "[yamlfmt] Checking .y[a]ml..."
