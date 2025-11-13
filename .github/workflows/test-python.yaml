@@ -1,0 +1,59 @@
+---
+name: Test Python
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+on:
+  workflow_run:
+    workflows: ["Lint Python"]
+    types:
+      - completed
+    branches:
+      - main
+  push:
+    branches:
+      - main
+    paths:
+      - '**/serox/**'
+      - .github/workflows/test-python.yaml
+      - pyproject.toml
+      - pytest.ini
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**/serox/**'
+      - .github/workflows/test-python.yaml
+      - pyproject.toml
+      - pytest.ini
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+env:
+  # Do not produce debug symbols to keep memory usage down
+  RUSTFLAGS: -C debuginfo=0
+
+jobs:
+  # Run pytest with coverage
+  pytest:
+    name: Run tests with pytest and coverage
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Python runtime
+        uses: ./.github/actions/setup-python
+
+      - name: Sync dependencies
+        run: uv sync --all-extras
+
+      - name: Run tests with coverage
+        run: uv run pytest --cov --cov-report=term-missing
+
+      - name: Check coverage threshold
+        run: uv run coverage report --fail-under=80
