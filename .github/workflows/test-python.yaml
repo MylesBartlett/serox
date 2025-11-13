@@ -8,27 +8,6 @@ on:
     workflows: ["Lint Python"]
     types:
       - completed
-  push:
-    branches:
-      - main
-    paths:
-      - '**/serox/**'
-      - .github/workflows/test-python.yaml
-      - pyproject.toml
-      - pytest.ini
-  pull_request:
-    branches:
-      - main
-    paths:
-      - '**/serox/**'
-      - .github/workflows/test-python.yaml
-      - pyproject.toml
-      - pytest.ini
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - ready_for_review
 
 jobs:
   # Run pytest with coverage
@@ -37,12 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    # Skip draft PRs. For workflow_run events, only run if the lint workflow succeeded.
-    # For other events (push/pull_request), run unconditionally.
-    if: ${{ !github.event.pull_request.draft && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
+    # Only run if the lint workflow succeeded
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Set up Python runtime
         uses: ./.github/actions/setup-python
