@@ -30,10 +30,6 @@ on:
       - reopened
       - ready_for_review
 
-env:
-  # Do not produce debug symbols to keep memory usage down
-  RUSTFLAGS: -C debuginfo=0
-
 jobs:
   # Run pytest with coverage
   pytest:
@@ -41,6 +37,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    # Skip draft PRs. For workflow_run events, only run if the lint workflow succeeded.
+    # For other events (push/pull_request), run unconditionally.
     if: ${{ !github.event.pull_request.draft && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
     steps:
       - name: Checkout code
