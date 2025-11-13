@@ -42,7 +42,7 @@ jobs:
         uses: ./.github/actions/setup-python
 
       - name: Lint with ruff
-        run: rye lint -a
+        run: uv run ruff check
 
   # Check formatting with ruff
   ruff-fmt:
@@ -56,8 +56,8 @@ jobs:
       - name: Set up Python runtime
         uses: ./.github/actions/setup-python
 
-      - name: Lint with ruff
-        run: rye fmt --check -a
+      - name: Check formatting with ruff
+        run: uv run ruff format --check
 
   # Lint docstrings
   pydoclint:
@@ -73,14 +73,14 @@ jobs:
 
       - name: Install pydoclint
         run: |
-          rye sync --no-lock --with-sources
+          uv sync
 
       - name: Lint docstrings with pydoclint
-        run: rye run lint-doc
+        run: uv run pydoclint
 
   # Type checking with pyright
   # Note that rust is required to build the Pyo3 bindings with maturin;
-  # this building is done automatically by `rye sync`.
+  # this building is done automatically by `uv sync`.
   pyright:
     name: Type-checking with Pyright
     runs-on: ubuntu-latest
@@ -99,7 +99,7 @@ jobs:
         uses: ./.github/actions/setup-python
 
       - name: Sync dependencies
-        run: rye sync --no-lock --all-features --with-sources
+        run: uv sync --all-extras
 
-      - name: Run pyright with rye
-        run: rye run pyright
+      - name: Run pyright
+        run: uv run basedpyright
