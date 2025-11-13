@@ -8,8 +8,6 @@ on:
     workflows: ["Lint Python"]
     types:
       - completed
-    branches:
-      - main
   push:
     branches:
       - main
